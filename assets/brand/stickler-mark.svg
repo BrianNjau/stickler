@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 132" width="132" height="132" role="img" aria-label="Stickler">
+  <title>Stickler</title>
+  <!-- Primary mark: the lens with a tick for a pupil.
+       Colourways:
+         primary  ring #E0902A, pupil #C23A2B, tick + field #FBFAF7, on ink #16202A
+         mono     ring + pupil #16202A, tick #FBFAF7, on paper #FBFAF7
+         inverse  ring + pupil #FBFAF7, tick #C23A2B, on red #C23A2B
+       Below 20px: drop the amber ring and the glint, keep ring stroke at 18. -->
+  <circle cx="66" cy="66" r="58" fill="#FBFAF7"/>
+  <circle cx="66" cy="66" r="58" fill="none" stroke="#E0902A" stroke-width="9"/>
+  <circle cx="66" cy="66" r="31" fill="#C23A2B"/>
+  <path d="M52 67.5l10.5 10L82 55.5" stroke="#FBFAF7" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="86" cy="44" r="7.5" fill="#FBFAF7" opacity="0.92"/>
+</svg>

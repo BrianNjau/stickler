@@ -6,6 +6,7 @@ library and daily timed blocks, and then keeps them honest with two mascots — 
 absurd cloud) and **The Snitch** (deadpan surveillance camera).
 
 ## Read before writing code
+
 1. `docs/PROJECT_BRIEF.md` — product, stack, the three algorithms, risks.
 2. `docs/AGENT_TASKS.md` — work packages WP0–WP10 with acceptance criteria. Build in order.
 3. `prototype/focus-strip.html` — open it in a browser and use it. It is the behavioural spec for
@@ -14,7 +15,11 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
 4. `supabase/migrations/*.sql` and `shared/types.ts` — the contract. Do not redesign either without
    raising it first.
 
+5. `docs/KEYS_AND_LIMITS.md` — spend caps and quotas. Never raise a cap without asking.
+6. `docs/design/*.png` — the canvas exports. Build what is drawn.
+
 ## Non-negotiables
+
 - **TypeScript strict.** No `any` across a module boundary.
 - **The client never writes XP, tokens or badges.** Only the `SECURITY DEFINER` RPCs in
   `03_functions.sql` do. If a feature seems to need a direct write, you have misread the design.
@@ -29,6 +34,7 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
   library, or calling any paid API from a new place.
 
 ## Voice and content rules for mascot copy
+
 - PG. No profanity. Absurd and deadpan, in the register of a family cartoon.
 - The Snitch mocks the **paperwork and the behaviour**, never the person's intelligence, body,
   worth or identity. No jokes about failure as a character flaw.
@@ -38,6 +44,7 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
   everywhere, including notifications.
 
 ## Working without API keys (current state)
+
 `EXPO_PUBLIC_AI_MODE=mock` and `EXPO_PUBLIC_MAPS_MODE=mock` are the defaults until keys exist.
 
 - **Plan creation** must work through `fn_apply_template(goal_id, template_key)` using the three
@@ -51,6 +58,7 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
   back to mock, and show a small notice in Settings — not an error dialog.
 
 ## Design principles
+
 - The Today screen is the app. Everything else is a tab away and must never trap the user: the nav
   is always visible, every sheet closes, nothing requires a refresh.
 - Motion is the reward. Respect Reduce Motion: the app must be fully usable with animations off.
@@ -58,9 +66,11 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
 - Copy is short, specific and funny. Never scold, never shame, never guilt-trip about streaks.
 
 ## Definition of done for any package
+
 Tests pass, `supabase db reset` runs clean, types regenerate, the feature works offline where the
 brief says it must, VoiceOver can operate every new control, and there is a short screen recording
 in the PR.
 
 ## Expo specifics
+
 See @AGENTS.md for SDK-specific Expo rules (versioned docs, `npx expo install`, routing).
