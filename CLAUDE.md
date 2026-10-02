@@ -61,3 +61,6 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
 Tests pass, `supabase db reset` runs clean, types regenerate, the feature works offline where the
 brief says it must, VoiceOver can operate every new control, and there is a short screen recording
 in the PR.
+
+## Expo specifics
+See @AGENTS.md for SDK-specific Expo rules (versioned docs, `npx expo install`, routing).

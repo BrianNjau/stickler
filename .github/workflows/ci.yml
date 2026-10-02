@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: App — secrets, tsc, eslint, web build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: No server secrets in client code
+        run: pnpm check:secrets
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Web build
+        run: pnpm build:web
+        env:
+          # Placeholders: proves the bundle builds; real values come from the host's env.
+          EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+      - name: No server secrets in the built bundle
+        run: node scripts/check-secrets.mjs dist
+
+  db:
+    name: Database — supabase db reset + types drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Start local Postgres
+        run: supabase db start
+      - name: Reset (runs every migration from scratch)
+        run: supabase db reset
+      - name: Generated types match the migrations
+        run: |
+          supabase gen types typescript --local > /tmp/database.types.ts
+          # PostgrestVersion differs between hosted and local stacks; everything else must match.
+          if ! diff -u -I 'PostgrestVersion' shared/database.types.ts /tmp/database.types.ts; then
+            echo "::error::shared/database.types.ts is stale. Run 'pnpm db:types' and commit it."
+            exit 1
+          fi
