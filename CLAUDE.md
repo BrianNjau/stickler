@@ -1,6 +1,6 @@
-# Focus Strip — agent context
+# Stickler — agent context
 
-You are building Focus Strip: a cross-platform productivity app (Expo + React Native Web) on
+You are building Stickler: a cross-platform productivity app (Expo + React Native Web) on
 Supabase. A user describes a goal in plain language; the app turns it into a path, a rotating quest
 library and daily timed blocks, and then keeps them honest with two mascots — **Nimbus** (warm,
 absurd cloud) and **The Snitch** (deadpan surveillance camera).

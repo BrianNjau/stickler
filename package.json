@@ -1,5 +1,5 @@
 {
-  "name": "focusstrip",
+  "name": "stickler",
   "version": "0.1.0",
   "main": "expo-router/entry",
   "packageManager": "pnpm@12.6.0",

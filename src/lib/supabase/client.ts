@@ -22,6 +22,8 @@ function create(): Supabase | null {
   const client = createClient<Database>(env.supabaseUrl, env.supabaseAnonKey, {
     auth: {
       storage: localStorage,
+      // App-owned key instead of the default `sb-<project-ref>-auth-token`. Changing it signs everyone out.
+      storageKey: 'stickler-auth-token',
       persistSession: true,
       autoRefreshToken: true,
       // Magic-link redirects land in the URL on web; native handles them via deep links (WP1).

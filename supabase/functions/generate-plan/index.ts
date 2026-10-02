@@ -57,7 +57,7 @@ const PLAN_SCHEMA = {
   }
 } as const;
 
-const SYSTEM = `You design realistic personal plans for a productivity app called Focus Strip.
+const SYSTEM = `You design realistic personal plans for a productivity app called Stickler.
 
 The user gives you a goal in their own words plus their real constraints. You return ONE plan
 structured as tracks → stages → milestones, plus a library of repeatable quest items that the app

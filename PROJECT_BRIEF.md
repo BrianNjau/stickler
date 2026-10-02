@@ -1,4 +1,4 @@
-# Focus Strip — Product & Architecture Brief
+# Stickler — Product & Architecture Brief
 
 **Status:** v1 spec for build kick-off · **Owner:** Brian Njau · **Date:** 29 Sep 2026
 
