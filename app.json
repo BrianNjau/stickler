@@ -1,16 +1,19 @@
 {
   "expo": {
-    "name": "Focus Strip",
-    "slug": "focusstrip",
-    "scheme": "focusstrip",
+    "name": "Stickler",
+    "slug": "stickler",
+    "scheme": "stickler",
+    "description": "Plans that fit the day you actually have.",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.briannjau.stickler"
     },
     "android": {
+      "package": "com.briannjau.stickler",
       "adaptiveIcon": {
         "backgroundColor": "#EEF1EC",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -22,7 +25,8 @@
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "description": "Plans that fit the day you actually have."
     },
     "plugins": [
       "expo-router",

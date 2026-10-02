@@ -1,4 +1,4 @@
-# Setting up from an empty `focusstrip` folder
+# Setting up from an empty `stickler` folder
 
 Roughly 45 minutes, most of it waiting on installs. Do this yourself before the agent starts —
 agents are bad at account creation and secrets, and good at code.
@@ -24,12 +24,12 @@ docker --version                       # needed for `supabase start` locally
 
 ## 2. Lay down the repo
 ```bash
-cd ~/code/focusstrip
+cd ~/code/stickler
 git init && git branch -M main
 
 # drop the spec bundle in first, so the agent has context before any code exists
-unzip ~/Downloads/focusstrip-spec.zip -d .
-mv focusstrip-app/* . && rmdir focusstrip-app
+unzip ~/Downloads/stickler-spec.zip -d .
+mv stickler-app/* . && rmdir stickler-app
 mkdir -p docs && mv PROJECT_BRIEF.md AGENT_TASKS.md docs/
 
 git add -A && git commit -m "docs: product brief, work packages, database design, prototype"
@@ -37,7 +37,7 @@ git add -A && git commit -m "docs: product brief, work packages, database design
 
 Your tree should now be:
 ```
-focusstrip/
+stickler/
   CLAUDE.md                 <- agent context (see below)
   SETUP.md
   README.md

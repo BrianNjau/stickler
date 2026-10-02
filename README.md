@@ -1,4 +1,4 @@
-# Focus Strip — spec bundle
+# Stickler — spec bundle
 
 Hand this whole folder to the coding agent. Read in this order:
 
@@ -25,7 +25,8 @@ supabase secrets set ANTHROPIC_API_KEY=... GOOGLE_MAPS_API_KEY=...
 ```
 
 ## Open decisions (Brian to confirm before WP2 and WP9)
-1. **App name.** "Focus Strip" is a working title; check store availability before the icon work.
+1. **App name.** Decided: "Stickler" (bundle id `com.briannjau.stickler`), tagline "Plans that fit
+   the day you actually have." Check store availability before the icon work.
 2. **LLM budget per user.** Currently 5 plan generations per rolling week. Cheaper: 2.
 3. **Maps at launch.** Directions is billed per call. WP9 can ship behind a flag for beta users only.
 4. **Free vs paid split.** Suggested: free = one goal, one plan, full timer; paid = multiple goals,

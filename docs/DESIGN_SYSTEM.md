@@ -1,10 +1,10 @@
-# Focus Strip — visual direction and WP0.5
+# Stickler — visual direction and WP0.5
 
 **Direction: "soft paper, loud characters."** Warm near-white ground, flat pastel tinted cards,
 ink navy for every primary action, one hot amber accent reserved for live time, and two mascots
 carrying all the personality. Nothing is beige-and-grey, nothing is a gradient.
 
-**The reference is the canvas** (Focus Strip Mobile UI Kit, 7 artboards: Sign in, Goal intake,
+**The reference is the canvas** (Stickler Mobile UI Kit, 7 artboards: Sign in, Goal intake,
 Today, Focus session, Path, Rewards, and a tokens/components sheet). Build what is drawn there.
 `src/ui/tokens.ts` holds every value on that sheet — if a number is in the code, it came from there.
 
