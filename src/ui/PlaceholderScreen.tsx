@@ -1,16 +1,15 @@
 import { Card } from './Card';
 import { Screen } from './Screen';
+import { ScreenHeader, type ScreenHeaderProps } from './ScreenHeader';
 import { Text } from './Text';
 
-/** Holding screen for tabs whose work package hasn't landed. Keeps the nav complete from day one. */
-export function PlaceholderScreen({ title, body }: { title: string; body: string }) {
+/** Holding screen for routes whose work package hasn't landed. Keeps the nav complete. */
+export function PlaceholderScreen({ body, ...header }: ScreenHeaderProps & { body: string }) {
   return (
     <Screen>
-      <Text variant="display" accessibilityRole="header">
-        {title}
-      </Text>
+      <ScreenHeader {...header} />
       <Card>
-        <Text tone="ink2">{body}</Text>
+        <Text color="ink2">{body}</Text>
       </Card>
     </Screen>
   );

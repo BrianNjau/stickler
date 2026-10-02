@@ -1,17 +1,25 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
-import { radius, space, useColors } from './tokens';
+import { useTheme, type TintName } from './theme';
+import { radius, space } from './tokens';
 
-export function Card({ style, ...rest }: ViewProps) {
-  const c = useColors();
-  return <View {...rest} style={[styles.card, { backgroundColor: c.surface, borderColor: c.line }, style]} />;
+export interface CardProps extends ViewProps {
+  /** One flat tint per card. Untinted cards are white paper with a hairline. */
+  tint?: TintName;
+}
+
+export function Card({ tint, style, ...rest }: CardProps) {
+  const { theme, tint: tintOf } = useTheme();
+  const look = tint
+    ? { backgroundColor: tintOf(tint).bg, borderWidth: 0 }
+    : { backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.line };
+  return <View {...rest} style={[styles.card, look, style]} />;
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
-    borderRadius: radius.md,
-    padding: space.lg,
-    gap: space.sm,
+    borderRadius: radius.card,
+    padding: space.xl,
+    gap: space.md,
   },
 });

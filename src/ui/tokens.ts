@@ -78,7 +78,8 @@ export const palette = {
   },
 } as const;
 
-export type Theme = typeof palette.light;
+// Same keys as the light palette, but plain strings so the dark palette is assignable too.
+export type Theme = { readonly [K in keyof typeof palette.light]: string };
 
 /** Skill colours. A plan's skills map onto these in order; the tint pairs with the ink. */
 export const skillColors = [

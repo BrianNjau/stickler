@@ -26,7 +26,7 @@ export function DevBackendStatus() {
   }, []);
 
   return (
-    <Text variant="mono" tone="ink2" style={{ fontSize: 12 }}>
+    <Text variant="mono" color="ink3">
       dev · supabase: {status}
     </Text>
   );

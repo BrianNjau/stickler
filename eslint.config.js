@@ -19,4 +19,45 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  {
+    // Metro doesn't tree-shake: the lucide index pulls in every icon. Go through src/ui/icons.ts.
+    files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['src/ui/icons.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'lucide-react-native',
+              message: "Import icons from '@/ui/icons' (one file per icon) to keep the bundle small.",
+              allowTypeImports: true,
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Every colour comes from src/ui/tokens.ts (docs/DESIGN_SYSTEM.md). A literal elsewhere is a bug.
+    files: ['app/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
+    ignores: ['src/ui/tokens.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/#[0-9a-fA-F]{3,8}\\b/]',
+          message: 'Hex colour outside src/ui/tokens.ts. Use a palette token.',
+        },
+        {
+          selector: 'TemplateElement[value.raw=/#[0-9a-fA-F]{3,8}\\b/]',
+          message: 'Hex colour outside src/ui/tokens.ts. Use a palette token.',
+        },
+        {
+          selector: 'Literal[value=/^\\s*(rgb|hsl)a?\\(/]',
+          message: 'Colour function outside src/ui/tokens.ts. Use a palette token.',
+        },
+      ],
+    },
+  },
 ]);
