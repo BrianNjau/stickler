@@ -15,8 +15,10 @@ one of them alone eventually fails. Set all three before the keys go live.
 
 **In the Edge Function** (`supabase/functions/generate-plan/index.ts`)
 ```ts
-const MODEL = 'claude-sonnet-5';     // plan quality is fine here; Opus is not worth 5x for this
-const MAX_GENERATIONS_PER_WEEK = 3;  // per user, rolling 7 days (was 5 — 3 is plenty)
+const MODEL = Deno.env.get('PLAN_MODEL') || 'claude-sonnet-5-5'; // secret; claude-haiku-4-5-20251001 for dev
+const EFFORT = Deno.env.get('PLAN_EFFORT') || 'low'; // Sonnet 5.5 always thinks, and thinking counts toward
+                                     // MAX_OUTPUT_TOKENS: at the default `high` it ran out before the plan
+const MAX_GENERATIONS_PER_WEEK = 3;  // per user, rolling 7 days; a repair re-prompt is part of the same one
 const MAX_OUTPUT_TOKENS = 8000;      // a plan that needs more than this is too big to follow
 ```
 Add a global daily brake so one bad actor cannot drain the month:
@@ -32,8 +34,10 @@ select date_trunc('day', created_at) d, count(*), round(sum(cost_usd), 2) usd
 from ai_generations group by 1 order by 1 desc limit 14;
 ```
 
-**Expected cost.** One plan is roughly 1–2k input and 4–6k output tokens — about **$0.07–0.10**
-per generation at Sonnet pricing. At 3 per user per week, 100 active users is roughly **$30–40 a
+**Expected cost.** Measured in WP2.5 (Sonnet 5.5 at $2/$10 per MTok, effort low): one call is
+about 3k input and 4k output tokens, $0.04–0.05. Today almost every plan needs the one repair
+re-prompt (the first draft overshoots the weekly hours), so a generation is two calls, about
+**$0.10–0.12**, and 50–80 seconds. Dev runs on Haiku 4.5 cost about $0.04 each. At 3 per user per week, 100 active users is roughly **$30–40 a
 month worst case**, and far less in practice because most users generate once and then live off
 the rotation engine. The rotation does not call the model at all; that is the design decision that
 keeps this affordable.

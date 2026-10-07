@@ -25,6 +25,8 @@ export const clampEstimate = (n: number) =>
 export type GoalConstraints = {
   daily_minutes?: number;
   notes?: string;
+  /** The drafted plan's one clarifying question and the user's answer, sent with the next draft. */
+  clarification?: { question: string; answer: string };
 };
 
 // ── The plan being reviewed ───────────────────────────────────────────────────────────────────
@@ -50,6 +52,8 @@ export interface DraftMilestone {
   id: string;
   title: string;
   detail: string | null;
+  /** One line of coaching ("book the exam before you feel ready"). Templates and drafts both carry one. */
+  coachNote: string | null;
   skill: string | null;
   targetLabel: string;
   isKeystone: boolean;
@@ -76,7 +80,10 @@ export interface PlanDraft {
   goalId: string;
   version: number;
   northStar: string;
+  /** Why the plan is shaped this way: one paragraph, shown at the top of the review. */
   summary: string;
+  /** Only when the goal was too vague to plan well; answering it redrafts the plan. */
+  clarifyingQuestion: string | null;
   skills: PlanSkill[];
   tracks: DraftTrack[];
   milestones: DraftMilestone[];

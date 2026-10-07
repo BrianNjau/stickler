@@ -185,4 +185,26 @@ describe('RLS: users only ever touch their own rows', () => {
     const plans = await b.client.from('plans').select('id').eq('goal_id', b.goalId);
     assert.equal(plans.data?.length, 1, 'no plan was created on B’s goal');
   });
+
+  // ── WP2.5: the AI ledger and the plan drafter ──────────────────────────────────────────────
+
+  test('nobody can write the AI ledger (it holds the weekly and daily caps), or read anyone else’s', async () => {
+    const forged = { user_id: a.id, kind: 'plan', status: 'error' };
+    const ins = await a.client.from('ai_generations').insert(forged).select();
+    assert.ok(ins.error, 'a client must not be able to add ledger rows');
+    const upd = await a.client.from('ai_generations').update({ status: 'error' }).eq('user_id', a.id).select();
+    const del = await a.client.from('ai_generations').delete().eq('user_id', a.id).select();
+    assert.deepEqual(upd.data ?? [], [], 'a client must not be able to rewrite ledger rows');
+    assert.deepEqual(del.data ?? [], [], 'a client must not be able to delete ledger rows');
+    const theirs = await a.client.from('ai_generations').select('id').eq('user_id', b.id);
+    assert.deepEqual(theirs.data ?? [], []);
+  });
+
+  test("A cannot draft a plan on B's goal", async () => {
+    const r = await a.client.functions.invoke('generate-plan', { body: { goal_id: b.goalId } });
+    const status = (r.error as { context?: Response } | null)?.context?.status;
+    assert.equal(status, 404, 'the drafter reads goals as the caller, so B’s goal is not found');
+    const plans = await b.client.from('plans').select('id').eq('goal_id', b.goalId);
+    assert.equal(plans.data?.length, 1, 'no plan was created on B’s goal');
+  });
 });

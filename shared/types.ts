@@ -25,17 +25,29 @@ export const levelFromXp = (xp: number) => Math.max(1, Math.floor((1 + Math.sqrt
 export const xpForLevel  = (n: number) => (100 * (n - 1) * n) / 2;
 
 // ── Edge Function payloads ──────────────────────────────────────────────────
-export interface GeneratePlanRequest  { goal_id: string }
-export interface GeneratePlanResponse { plan_id: string; plan: GeneratedPlan }
+// generate-plan. The model's output shape (GeneratedPlan) and its validator live in
+// supabase/functions/_shared/plan.ts; the plan is saved as a draft and read back like any other.
+export type GeneratePlanRequest  = { goal_id: string } | { action: 'quota' };
+export interface GeneratePlanResponse {
+  plan_id: string; clarifying_question: string | null; repaired: boolean; remaining: number;
+}
+export interface GeneratePlanQuota {
+  limit: number; used: number; remaining: number; resets_at: string | null; configured: boolean;
+}
+export type GeneratePlanError = 'rate_limited' | 'busy' | 'invalid_plan' | 'not_configured' | 'generation_failed';
 
 export interface GeneratedPlan {
-  title: string; domain: GoalDomain; north_star: string; summary: string;
+  title: string; domain: GoalDomain; north_star: string;
+  rationale: string;               // saved as plans.summary
+  clarifying_question: string;     // '' when the goal is clear; saved as plans.clarifying_question
   skills: { key: string; label: string; description: string }[];
   tracks: { key: string; title: string; goal_line: string;
-            stages: { title: string; description: string; requires_milestone_titles?: string[] }[] }[];
-  milestones: { title: string; detail: string; skill: string; target_label: string; is_keystone: boolean }[];
-  quest_items: { title: string; detail?: string; skill: string; kind: QuestKind; estimate_minutes: number }[];
-  mascot_lines?: { persona: Exclude<Persona,'system'>; event: string; body: string }[];
+            stages: { title: string; description: string; requires_milestone_titles: string[] }[] }[];
+  milestones: { title: string; detail: string; coach_note: string; skill: string; due_week: number;
+                target_label: string; is_keystone: boolean }[];
+  quest_items: { title: string; detail: string; skill: string; kind: Exclude<QuestKind,'rest'>;
+                 estimate_minutes: number; times_per_week: number }[];
+  weekly_load_minutes: number;     // the model's own sum; the validator recomputes it
 }
 
 export interface CommuteCheckRequest  { local_date: string }

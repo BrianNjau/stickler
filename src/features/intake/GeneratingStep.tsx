@@ -3,15 +3,38 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { createPlan, loadDraft } from '@/lib/plans';
+import { createPlan, firstShape, listShapes, loadDraft, type CreatePlanResult, type GoalRow } from '@/lib/plans';
 import { Button, Card, MascotBubble, radius, size, Skeleton, space, Text, useReducedMotion, useTheme } from '@/ui';
 
-import { generatingCopy } from './copy';
+import { generatingCopy, reviewCopy } from './copy';
 import { useIntake } from './IntakeContext';
 
+/** Measured: 40–80 s for a draft plus its repair (Sonnet 5.5, low effort). Past this, say so. */
+const SLOW_AFTER_MS = 75_000;
+
 /**
- * AI_MODE=live only. Honest about the wait, never a dead end: any failure returns to the shape
- * picker with a plain sentence about what happened.
+ * One request per goal at a time. Every draft costs the user one of their weekly three, so a
+ * remount (React dev double-effects, a fast back-and-forward) must join the request already in
+ * flight rather than start a second one.
+ */
+let inflight: { goalId: string; ctrl: AbortController; result: Promise<CreatePlanResult> } | null = null;
+
+function draftFor(goal: GoalRow) {
+  if (inflight && inflight.goalId === goal.id && !inflight.ctrl.signal.aborted) return inflight;
+  const ctrl = new AbortController();
+  const result = createPlan(goal, { kind: 'ai' }, { signal: ctrl.signal });
+  const mine = { goalId: goal.id, ctrl, result };
+  inflight = mine;
+  result.finally(() => {
+    if (inflight === mine) inflight = null;
+  });
+  return mine;
+}
+
+/**
+ * AI_MODE=live only. Honest about the wait, never a dead end: rate-limited, failed and offline go
+ * back to the shape picker with a plain sentence; a plan that failed validation twice becomes the
+ * closest template, and the review says so.
  */
 export function GeneratingStep() {
   const { theme } = useTheme();
@@ -19,6 +42,8 @@ export function GeneratingStep() {
   const reduced = useReducedMotion();
   const { goal, startReview } = useIntake();
   const [line, setLine] = useState(0);
+  const [slow, setSlow] = useState(false);
+  const [fallingBack, setFallingBack] = useState(false);
 
   // Banter rotates while the model works; held still under Reduce Motion.
   useEffect(() => {
@@ -28,16 +53,38 @@ export function GeneratingStep() {
   }, [reduced]);
 
   useEffect(() => {
+    const id = setTimeout(() => setSlow(true), SLOW_AFTER_MS);
+    return () => clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
     if (!goal) return;
     let live = true;
-    createPlan(goal, { kind: 'ai' }).then(async (r) => {
+    const toShape = (fallback: string) => live && router.replace({ pathname: '/intake/shape', params: { fallback } });
+
+    draftFor(goal).result.then(async (r) => {
       if (!live) return;
-      if (!r.ok) return router.replace({ pathname: '/intake/shape', params: { fallback: r.reason } });
       try {
-        startReview(await loadDraft(r.planId));
+        if (r.ok) {
+          startReview(await loadDraft(r.planId));
+          if (live) router.replace('/intake/review');
+          return;
+        }
+        if (r.reason === 'cancelled') return;
+        if (r.reason !== 'invalid') return toShape(r.reason);
+
+        // Validation failed twice: the closest template, and a plain sentence about why.
+        setFallingBack(true);
+        const shapes = await listShapes();
+        const pick = firstShape(`${goal.raw_input} ${goal.why ?? ''}`, shapes);
+        const shape = shapes.find((s) => s.key === pick?.key);
+        if (!pick || !shape) return toShape('invalid');
+        const t = await createPlan(goal, { kind: 'template', templateKey: pick.key });
+        if (!t.ok) return toShape('invalid');
+        startReview(await loadDraft(t.planId), reviewCopy.fellBack(shape.title));
         if (live) router.replace('/intake/review');
       } catch {
-        if (live) router.replace({ pathname: '/intake/shape', params: { fallback: 'failed' } });
+        toShape('failed');
       }
     });
     return () => {
@@ -49,6 +96,12 @@ export function GeneratingStep() {
 
   if (!goal) return <Redirect href="/intake" />;
 
+  const cancel = () => {
+    // The server may still finish, but the result is dropped: no draft to resume, nothing live.
+    if (inflight?.goalId === goal.id) inflight.ctrl.abort();
+    router.replace('/intake/shape');
+  };
+
   return (
     <View style={[styles.fill, { backgroundColor: theme.ground, paddingTop: insets.top + space.xxl }]}>
       <View style={styles.column}>
@@ -58,7 +111,9 @@ export function GeneratingStep() {
         <Text variant="h1" accessibilityRole="header">
           {generatingCopy.title}
         </Text>
-        <Text color="ink2">{generatingCopy.honest}</Text>
+        <Text color="ink2" accessibilityLiveRegion="polite">
+          {fallingBack ? generatingCopy.fallingBack : slow ? generatingCopy.slow : generatingCopy.honest}
+        </Text>
         <MascotBubble persona="nimbus" mood="focus">
           {generatingCopy.banter[line] ?? generatingCopy.banter[0]}
         </MascotBubble>
@@ -68,7 +123,7 @@ export function GeneratingStep() {
           <Skeleton width="80%" height={18} />
           <Skeleton width="65%" height={18} rounded={radius.pill} />
         </Card>
-        <Button label={generatingCopy.cancel} variant="quiet" size="md" onPress={() => router.replace('/intake/shape')} />
+        <Button label={generatingCopy.cancel} variant="quiet" size="md" onPress={cancel} />
       </View>
     </View>
   );

@@ -33,6 +33,7 @@ export async function loadDraft(planId: string): Promise<PlanDraft> {
     version: p.version,
     northStar: p.north_star ?? '',
     summary: p.summary ?? '',
+    clarifyingQuestion: p.clarifying_question?.trim() || null,
     skills: skillsFrom(p.skills),
     tracks: tracks.data.map((t) => ({
       id: t.id,
@@ -52,6 +53,7 @@ export async function loadDraft(planId: string): Promise<PlanDraft> {
       id: m.id,
       title: m.title,
       detail: m.detail,
+      coachNote: m.coach_note,
       skill: m.skill,
       targetLabel: m.target_label ?? '',
       isKeystone: m.is_keystone,

@@ -57,13 +57,20 @@ export const shapeCopy = {
   quests: 'quests',
   choose: 'Use this shape',
   building: 'Building your plan…',
-  aiTitle: 'Or let Stickler draft one for this goal',
-  aiBody: 'Written for your goal and your hours. Takes 10–20 seconds.',
+  aiTitle: 'None of these fit? Stickler can draft one',
+  aiBody: 'Written around your exact goal, your reasons and your hours, with real topics instead of placeholders. Takes about a minute.',
   aiCta: 'Draft my plan',
+  aiLeft: (left: number, limit: number) => `${left} of ${limit} drafts left this week.`,
+  aiNoneLeft: (when: string | null) =>
+    `You’ve used this week’s drafts${when ? `; the next one frees up ${when}` : ''}. The shapes above are instant and just as editable.`,
+  aiOff: 'Drafting is switched off on the server right now. The shapes above work as normal.',
   fallback: {
     rate_limited: 'You’ve used this week’s drafted plans. The shapes below are instant and just as editable.',
     failed: 'The plan drafter didn’t come back with a plan. Nothing is lost — pick a shape and carry on.',
     offline: 'No connection, so no drafting. Pick a shape; it works the moment you’re back online.',
+    busy: 'Stickler has drafted all the plans it can for today. Pick a shape now, or try drafting again tomorrow.',
+    unavailable: 'Drafting is switched off on the server right now. Pick a shape; nothing else changes.',
+    invalid: 'Stickler couldn’t draft a plan that fits your goal and your hours. Pick a shape; they’re instant.',
   },
   createFailed: 'That shape didn’t load. Check your connection and try again.',
 } as const;
@@ -79,8 +86,10 @@ export const shapeDuration: Record<string, string> = {
 export const generatingCopy = {
   eyebrow: 'Drafting',
   title: 'Writing a plan for your goal',
-  honest: 'This usually takes 10–20 seconds. Real plans take a moment.',
+  honest: 'This takes about a minute: Stickler writes the plan, then checks it fits your hours and fixes it if not.',
+  slow: 'Taking longer than usual. Still working, probably fixing a first draft that didn’t fit your hours. You can pick a shape instead at any time.',
   cancel: 'Pick a shape instead',
+  fallingBack: 'The draft didn’t hold together. Fetching the closest starter instead…',
   banter: [
     'Measuring your goal with a very small ruler.',
     'Checking how many hours you actually have. Not the ones you wish you had.',
@@ -94,6 +103,18 @@ export const reviewCopy = {
   eyebrow: 'Your plan',
   title: 'Make it yours, then start',
   body: 'Nothing is saved until you press Start. Rename, cut or retime anything.',
+  why: 'Why this plan is shaped this way',
+  fellBack: (title: string) =>
+    `Stickler couldn’t draft a plan that fits your goal and your hours, so this is the closest starter instead: “${title}”. Edit it here, or go back and pick another shape.`,
+  clarify: {
+    eyebrow: 'One question',
+    body: 'Your goal left this open. Answer it and Stickler redrafts the plan around your answer, or skip it and edit this one.',
+    label: 'Your answer',
+    cta: 'Redraft with this answer',
+    costs: (left: number) => `Uses one of this week’s drafts (${left} left).`,
+    none: 'No drafts left this week. Edit this plan instead; you can redraft next week.',
+    failed: 'That answer didn’t save. Check your connection and try again.',
+  },
   stages: 'Stages',
   milestones: 'Milestones',
   quests: 'Quest library',
