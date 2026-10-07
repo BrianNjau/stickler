@@ -83,6 +83,23 @@ export async function saveAccount(uid: string, profile: ProfilePatch, settings: 
   return { ok: true };
 }
 
+/** One field, from the intake wizard's "how much time" step. Keeps the cached copy in step. */
+export async function updateCapacity(uid: string, minutes: number): Promise<SaveResult> {
+  const { data, error } = await requireSupabase()
+    .from('user_settings')
+    .update({ daily_capacity_minutes: minutes, updated_at: new Date().toISOString() })
+    .eq('user_id', uid)
+    .select()
+    .single();
+  if (error) return { ok: false, message: 'That didn’t save. Try again.' };
+  if (state.account?.uid === uid) {
+    const account: Account = { ...state.account, settings: data };
+    kv.setJSON(cacheKey(uid), account);
+    publish({ account });
+  }
+  return { ok: true };
+}
+
 const get = () => state;
 const subscribe = (l: () => void) => {
   listeners.add(l);
