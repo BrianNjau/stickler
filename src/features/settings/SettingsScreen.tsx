@@ -29,6 +29,7 @@ import {
 import { LogOut, Mail } from '@/ui/icons';
 
 import { humourLevels, snitchLevels } from './copy';
+import { PlanSection } from './PlanSection';
 
 interface Prefs {
   snitchIntensity: number;
@@ -196,6 +197,8 @@ export function SettingsScreen() {
           </View>
         )}
       </Section>
+
+      <PlanSection />
 
       {account ? (
         <EditableSettings key={account.uid} account={account} />

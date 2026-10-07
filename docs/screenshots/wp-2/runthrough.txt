@@ -1,0 +1,175 @@
+[cert] Try a day → /intake
+Dropped-session check: resumed note shown=true, goal text restored=true
+[cert] shape picker: closest match=yes, best start=no, no-fit note=not shown, AI option shown=false
+[cert] review edits: renamed stage 1, retimed milestone 2, removed "Associate cloud certification", added one quest, removed one quest
+[cert] Start this plan → /; blocks on Today: 5
+### cert: Get my AWS Solutions Architect Associate certification by March. About 90 minutes on weeknights.
+User: anonymous trial (is_anonymous=true), timezone from device
+Goal (their words): "Get my AWS Solutions Architect Associate certification by March. About 90 minutes on weeknights."
+Goal title: Get my AWS Solutions Architect Associate · domain: software · horizon: months · why: A cloud role pays a lot more than my current support job, and I want the choice. · constraints: {"notes":"Thursday nights are football.","daily_minutes":120}
+Plans: v1 (active)
+North star: Credentials and proof of work that make a senior cloud role a choice, not a hope.
+Stages:
+  1. Groundwork done (renamed in review)
+  2. Automation credible
+  3. Professional level
+  4. Interview ready
+  5. Offer in hand
+Milestones:
+  - Infrastructure-as-code certification — By the end of next month (retimed) [keystone]
+  - Container certification — About 6 weeks later [keystone]
+  - Portfolio project shipped — Within 4 months
+  - Professional architect certification — Within 6 months [keystone]
+Quest library: 23 live (610 min total); retired from older plans: 0
+  * My own quest: review the week on Sunday (25m, user)
+Day 2026-10-07:
+  08:00–09:15 Deep work: new material
+      • Write a one-page design note on a real problem (30m, boss, rescue)
+      • One system design problem, written up end to end (30m, main, rescue)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Read one chapter of a systems design book, 5 takeaways (45m, boss, rescue)
+  10:20–10:50 Lock it in
+      • Explain three services out loud as if teaching someone (20m, boss)
+Day 2026-10-08:
+  08:00–09:15 Deep work: new material
+      • One system design problem, written up end to end (30m, boss, rescue)
+      • Write a one-page design note on a real problem (30m, main, rescue)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Read one chapter of a systems design book, 5 takeaways (45m, boss, rescue)
+  10:20–10:50 Lock it in
+      • 25 timed practice questions, mixed domains (35m, boss)
+
+[cert] no page errors
+[exam] Try a day → /intake
+[exam] shape picker: closest match=yes, best start=no, no-fit note=not shown, AI option shown=false
+[exam] review edits: renamed stage 1, retimed milestone 2, removed "First full pass of the syllabus", added one quest, removed one quest
+[exam] Start this plan → /; blocks on Today: 5
+### exam: Pass the ACCA Financial Reporting exam in June
+User: anonymous trial (is_anonymous=true), timezone from device
+Goal (their words): "Pass the ACCA Financial Reporting exam in June"
+Goal title: Pass the ACCA Financial Reporting exam · domain: exams · horizon: months · why: It is the last paper between me and qualifying. · constraints: {"daily_minutes":120}
+Plans: v1 (active)
+North star: Walk into the exam already knowing you have passed it.
+Stages:
+  1. Groundwork done (renamed in review)
+  2. Practice above threshold
+  3. Weak areas closed
+  4. Exam sat
+Milestones:
+  - Mock exam above pass mark — By the end of next month (retimed) [keystone]
+  - Exam day — The date [keystone]
+Quest library: 12 live (295 min total); retired from older plans: 0
+  * My own quest: review the week on Sunday (25m, user)
+Day 2026-10-07:
+  08:00–09:15 Deep work: new material
+      • 20 practice questions, untimed, full workings (30m, boss, rescue)
+      • Practice the calculation type you avoid (30m, main, rescue)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Rework the three questions that beat you last week (25m, boss, rescue)
+      • Skim your gaps list and pick the ugliest one (15m, side)
+  10:20–10:50 Lock it in
+      • Teach one concept out loud to an empty room (15m, boss)
+Day 2026-10-08:
+  08:00–09:15 Deep work: new material
+      • 20 practice questions, untimed, full workings (30m, boss, rescue)
+      • Rework the three questions that beat you last week (25m, main, rescue)
+      • Skim your gaps list and pick the ugliest one (15m, side)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Practice the calculation type you avoid (30m, boss, rescue)
+      • Make 10 flashcards from today's topic (15m, side)
+  10:20–10:50 Lock it in
+      • Review every wrong answer and write why it was wrong (25m, boss)
+
+[exam] no page errors
+[business] Try a day → /intake
+[business] shape picker: closest match=yes, best start=no, no-fit note=not shown, AI option shown=false
+[business] review edits: renamed stage 1, retimed milestone 2, removed "Offer written and priced", added one quest, removed one quest
+[business] Start this plan → /; blocks on Today: 5
+[business] Change my plan → goal pre-filled: true
+[business] re-plan committed → /
+### business: Launch a weekend cake business and land my first 10 paying customers
+User: anonymous trial (is_anonymous=true), timezone from device
+Goal (their words): "Launch a weekend cake business and land my first 10 paying customers"
+Goal title: Launch a weekend cake business and · domain: business · horizon: year · why: I want income that is mine, from something I already love doing. · constraints: {"notes":"Baking only on Saturdays; orders go out Sunday.","daily_minutes":120}
+Plans: v1 (kept, inactive), v2 (active)
+North star: Money from strangers, repeatably, without you being the only reason it works.
+Stages:
+  1. Offer is clear
+  2. First customer
+  3. Three customers
+  4. It runs without heroics
+Milestones:
+  - Offer written and priced — Week 2
+  - 20 real conversations — Week 6
+  - First paying customer — Week 8 [keystone]
+  - Three paying customers — Month 4 [keystone]
+Quest library: 12 live (305 min total); retired from older plans: 12
+Day 2026-10-07:
+  08:00–09:15 Deep work: new material
+      • Do the work for one customer, properly (45m, boss, rescue)
+      • Send 5 personal messages to potential buyers (25m, main)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • One customer conversation, listen more than you talk (30m, boss)
+      • Ask a happy customer for one referral (15m, side)
+  10:20–10:50 Lock it in
+      • Write down what the last three people actually complained about (20m, boss)
+Day 2026-10-08:
+  08:00–09:15 Deep work: new material
+      • Do the work for one customer, properly (45m, boss, rescue)
+      • Write the offer in one sentence, then cut it in half (25m, main)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Send invoices and chase anything unpaid (20m, boss)
+      • Write down what the last three people actually complained about (20m, side)
+  10:20–10:50 Lock it in
+
+[business] no page errors
+[swim] Try a day → /intake
+[swim] shape picker: closest match=none, best start=yes, no-fit note=not shown, AI option shown=false
+[swim] review edits: renamed stage 1, retimed milestone 2, removed "First real session done", added one quest, removed one quest
+[swim] absurd estimates: first three quests after 60 presses each = 240 min, 240 min, 240 min
+[swim] warning shown: 3 per-quest notes
+[swim] Start this plan → /; blocks on Today: 5
+### swim: Learn to swim
+User: anonymous trial (is_anonymous=true), timezone from device
+Goal (their words): "Learn to swim"
+Goal title: Learn to swim · domain: other · horizon: weeks · why: — · constraints: {"daily_minutes":120}
+Plans: v1 (active)
+North star: The goal done, at a pace you could actually keep.
+Stages:
+  1. Comfortable in the water
+  2. It is a habit
+  3. Halfway, honestly
+  4. Goal reached
+Milestones:
+  - Two weeks without missing a planned day — By the end of next month (retimed)
+  - Halfway check-in — Halfway to your date
+  - Goal reached — Your date [keystone]
+Quest library: 12 live (920 min total); retired from older plans: 0
+  * 20 minutes of floating practice, shallow end (25m, user)
+  * Learn one technique properly: read or watch, then try it once (240m, template)
+  * Remove one thing that keeps getting in the way (240m, template)
+  * Pick next week's smallest next step and put it in the plan (240m, template)
+Day 2026-10-07:
+  08:00–09:15 Deep work: new material
+      • Pick next week's smallest next step and put it in the plan (240m, boss, rescue)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Remove one thing that keeps getting in the way (240m, boss, rescue)
+  10:20–10:50 Lock it in
+      • Practise the part you have been avoiding (30m, boss)
+Day 2026-10-08:
+  08:00–09:15 Deep work: new material
+      • Pick next week's smallest next step and put it in the plan (240m, boss, rescue)
+  09:15–09:30 Break
+  09:30–10:20 Practice and application
+      • Remove one thing that keeps getting in the way (240m, boss, rescue)
+  10:20–10:50 Lock it in
+      • Measure where you are: one honest test or check (20m, boss)
+
+[swim] no page errors

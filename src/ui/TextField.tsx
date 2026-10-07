@@ -43,6 +43,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
         {...rest}
         style={[
           styles.input,
+          rest.multiline && styles.multiline,
           {
             color: theme.ink,
             backgroundColor: theme.surface,
@@ -73,4 +74,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg + 2,
     fontSize: text.body.size,
   },
+  // Long answers ("in your own words"): room to write, text starting at the top.
+  multiline: { minHeight: 112, paddingTop: space.md, paddingBottom: space.md, textAlignVertical: 'top', lineHeight: text.body.line },
 });

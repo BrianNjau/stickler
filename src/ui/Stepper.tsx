@@ -49,7 +49,12 @@ export function Stepper({ label, value, min, max, step, onChange, format }: Step
       accessible
       accessibilityRole="adjustable"
       accessibilityLabel={label}
-      accessibilityValue={{ text: format(value) }}
+      accessibilityValue={{ min, max, now: value, text: format(value) }}
+      // react-native-web ignores accessibilityValue; the aria-* props reach browser screen readers.
+      aria-valuemin={min}
+      aria-valuemax={max}
+      aria-valuenow={value}
+      aria-valuetext={format(value)}
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       onAccessibilityAction={(e) => set(value + (e.nativeEvent.actionName === 'increment' ? step : -step))}
     >
