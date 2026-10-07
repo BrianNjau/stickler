@@ -1,3 +1,4 @@
+import { loadAccount } from '../account';
 import { requireSupabase } from '../supabase';
 import { describeAuthError, type AuthProblem } from './errors';
 import { refreshAuth } from './state';
@@ -35,7 +36,12 @@ export async function startTrial(timezone: string): Promise<Result> {
   // Trials skip first-run capture, but plans need the right clock. Best effort; Settings can fix it.
   const supabase = requireSupabase();
   const { data } = await supabase.auth.getUser();
-  if (data.user) await supabase.from('profiles').update({ timezone }).eq('id', data.user.id);
+  if (data.user) {
+    const { error } = await supabase.from('profiles').update({ timezone }).eq('id', data.user.id);
+    // The account copy may have loaded the seeded 'UTC' while this write was in flight; reload it so
+    // Settings shows (and can never save back) the stale zone.
+    if (!error) await loadAccount(data.user.id);
+  }
   return ok;
 }
 
