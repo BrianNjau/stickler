@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { ChevronLeft } from './icons';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -12,7 +12,7 @@ export interface ScreenHeaderProps {
   /** Small mono line above the title (a date, a section). */
   eyebrow?: string;
   /** Shows a Back control. Falls back to `fallbackHref` when there is no history (e.g. a web deep link). */
-  back?: { fallbackHref: '/' | '/character' };
+  back?: { fallbackHref: Href };
   right?: ReactNode;
 }
 

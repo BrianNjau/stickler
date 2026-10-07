@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   Pressable,
@@ -29,11 +28,8 @@ export function IntroScreen() {
   const [width, setWidth] = useState(0);
   const [index, setIndex] = useState(0);
 
-  // Navigate first, then flip the flag: the intro route is guarded and disappears once it is seen.
-  const finish = () => {
-    router.replace('/sign-in');
-    markIntroSeen();
-  };
+  // The root guards do the navigating: once the intro is seen, a signed-out user can only be on sign-in.
+  const finish = () => markIntroSeen();
 
   const goTo = (i: number) => {
     pager.current?.scrollTo({ x: i * width, animated: !reduced });

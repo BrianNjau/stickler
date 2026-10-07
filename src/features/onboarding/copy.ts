@@ -55,13 +55,3 @@ export const introArt = {
     { persona: 'nimbus', mood: 'focus', tint: 'butter', line: 'Ignore it. Breathe out slowly, pick the smallest next thing, five minutes. Go.' },
   ],
 } as const;
-
-/** docs/design/Sign in. The email, Apple and Google forms land with WP1; the trial path works now. */
-export const signInCopy = {
-  title: 'Tell us the goal. We’ll handle the Tuesday.',
-  body: 'Your plan, broken into blocks you can actually finish — with two characters who refuse to let the day drift.',
-  nimbus: { name: 'Nimbus', about: 'Cheers you on. Makes puns. Sorry in advance.' },
-  snitch: { name: 'The Snitch', about: 'Logs every drift. Takes your to-do list far too seriously.' },
-  pending: 'Sign in with email, Apple or Google is on its way.',
-  trial: 'Try a day without an account',
-} as const;

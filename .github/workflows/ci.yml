@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   app:
-    name: App — secrets, tsc, eslint, web build
+    name: App — secrets, tsc, eslint, unit tests, web build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +28,8 @@ jobs:
         run: pnpm typecheck
       - name: Lint
         run: pnpm lint
+      - name: Unit tests
+        run: pnpm test
       - name: Web build
         run: pnpm build:web
         env:
@@ -38,15 +40,21 @@ jobs:
         run: node scripts/check-secrets.mjs dist
 
   db:
-    name: Database — supabase db reset + types drift
+    name: Database — db reset, types drift, RLS smoke test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - uses: supabase/setup-cli@v1
         with:
           version: 2.118.0
-      - name: Start local Postgres
-        run: supabase db start
+      - name: Start local Supabase (Postgres + Auth + REST; anonymous sign-ins on via config.toml)
+        run: supabase start
       - name: Reset (runs every migration from scratch)
         run: supabase db reset
       - name: Generated types match the migrations
@@ -57,3 +65,7 @@ jobs:
             echo "::error::shared/database.types.ts is stale. Run 'pnpm db:types' and commit it."
             exit 1
           fi
+      - name: RLS smoke test (fails if any owner policy is removed)
+        run: |
+          eval "$(supabase status -o env)"
+          SUPABASE_URL="$API_URL" SUPABASE_ANON_KEY="${ANON_KEY:-$PUBLISHABLE_KEY}" pnpm test:rls

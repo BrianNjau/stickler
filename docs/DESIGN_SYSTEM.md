@@ -36,7 +36,9 @@ doesn't apply. Tab icons: `CalendarDays`, `Route`, `Timer`, `Gift`, `CircleUser`
   press, `accessibilityRole="button"`, loading state with a spinner that keeps the width.
 - `Card` — `tint?: 'butter'|'mint'|'sky'|'lilac'|'blush'`, `radius.card`, no shadow, no border when
   tinted, `line` border when white.
-- `Pill` — priority pills (boss/main/side/rescue), meta pills, round pills.
+- `Pill` — priority pills (boss/main/side/rescue), meta pills, round pills. Priority pills follow
+  the tokens sheet: name and reward, `BOSS · 30` on blush, `MAIN · 20` on butter, `SIDE · 10`
+  neutral, `RESCUE · 1.5×` on mint. The numbers come from `XP` in `shared/types.ts`.
 - `TaskRow` — checkbox + title + optional minutes + priority pill + swipe actions.
 - `Sheet` — bottom sheet with a grab handle, `radius.sheet`, the one shadow, backdrop at 55%,
   always dismissible by swipe and by an explicit × (nothing traps the user).
@@ -45,6 +47,12 @@ doesn't apply. Tab icons: `CalendarDays`, `Route`, `Timer`, `Gift`, `CircleUser`
 - `Nimbus` and `Snitch` — react-native-svg components with a `mood` prop
   (`idle | focus | happy | sad | cool | sleep` and `asleep | watch | angry`). Copy the paths from
   the canvas artboards; animate with Reanimated, never GIFs.
+  **Intended deviation, dark mode:** the Snitch's ink tile gets a 1.5-unit `line2` (dark) edge.
+  Without it the tile vanishes into the dark ground. Light mode stays edgeless, as drawn.
+
+### Brand
+- Tagline, everywhere (splash, sign-in, store listing): **"Plans that fit the day you actually
+  have."** Mono labels drop the full stop. Source: `src/lib/brand.ts`.
 
 ### 4. Re-skin what exists
 Today (empty state included), the tab bar, and the settings stub. The tab bar is white with a

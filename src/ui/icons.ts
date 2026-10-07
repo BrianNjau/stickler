@@ -12,8 +12,12 @@ export { default as ChevronRight } from 'lucide-react-native/icons/chevron-right
 export { default as CircleUser } from 'lucide-react-native/icons/circle-user';
 export { default as Flame } from 'lucide-react-native/icons/flame';
 export { default as Gift } from 'lucide-react-native/icons/gift';
+export { default as Globe } from 'lucide-react-native/icons/globe';
+export { default as LogOut } from 'lucide-react-native/icons/log-out';
+export { default as Mail } from 'lucide-react-native/icons/mail';
 export { default as Minus } from 'lucide-react-native/icons/minus';
 export { default as Play } from 'lucide-react-native/icons/play';
+export { default as Plus } from 'lucide-react-native/icons/plus';
 export { default as Route } from 'lucide-react-native/icons/route';
 export { default as Settings } from 'lucide-react-native/icons/settings';
 export { default as Timer } from 'lucide-react-native/icons/timer';
