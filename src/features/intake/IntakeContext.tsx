@@ -9,7 +9,9 @@ interface IntakeState {
   draft: PlanDraft | null;
   original: PlanDraft | null;
   setDraft: (d: PlanDraft) => void;
-  startReview: (d: PlanDraft) => void;
+  /** `notice`: one plain sentence shown above the plan, e.g. why a template replaced the draft. */
+  startReview: (d: PlanDraft, notice?: string | null) => void;
+  notice: string | null;
   /** "Change my plan": a new version of the active goal's plan. */
   replan: boolean;
   setReplan: (r: boolean) => void;
@@ -24,6 +26,7 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
   const [draft, setDraft] = useState<PlanDraft | null>(null);
   const [original, setOriginal] = useState<PlanDraft | null>(null);
   const [replan, setReplan] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const value = useMemo<IntakeState>(
     () => ({
       goal,
@@ -31,10 +34,12 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
       draft,
       original,
       setDraft,
-      startReview: (d) => {
+      startReview: (d, n = null) => {
         setOriginal(d);
         setDraft(d);
+        setNotice(n);
       },
+      notice,
       replan,
       setReplan,
       reset: () => {
@@ -42,9 +47,10 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
         setDraft(null);
         setOriginal(null);
         setReplan(false);
+        setNotice(null);
       },
     }),
-    [goal, draft, original, replan],
+    [goal, draft, original, replan, notice],
   );
   return <IntakeContext.Provider value={value}>{children}</IntakeContext.Provider>;
 }

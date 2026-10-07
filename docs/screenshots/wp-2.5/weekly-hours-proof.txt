@@ -1,0 +1,26 @@
+Proof: the weekly-hours validation rejects an over-stuffed plan
+
+1) Deterministic: tests/unit/generatePlan.test.ts (runs in CI, no model call)
+   ok - a plan that fits their hours, skills and milestones passes
+   ok - an over-stuffed plan is rejected by the weekly-hours check, with numbers the model can act on
+   ok - a plan that ignores most of their hours is rejected too
+   ok - every rule in the brief is checked: skills, 10–90 estimates, 20 quests, real milestone titles
+# tests 19
+# pass 19
+# fail 0
+
+2) Live, on the deployed function (claude-haiku-4-5-20251001, dev model): 'Learn to swim', 45 min/day,
+   rest Sun + Wed = 225 min/week. Both attempts over-stuffed; the function refused to save either and
+   returned invalid_plan, so the app showed the closest template with a plain notice. Ledger rows:
+== swim: "Learn to swim" (91.0s) ==
+ERROR FunctionsHttpError Edge Function returned a non-2xx status code status=422 body={"error":"invalid_plan","problems":["These quests are longer than the 45 minutes they have in a day: \"Monthly peer observation: ask someone to watch a lesson\".","A typical week of this plan needs 307 minutes (sum of estimate_minutes × times_per_week), but they have 225 minutes a week. Bring it to about 180 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Weekly swimming lesson with qualified instructor (45 × 1 = 45); Core stability dryland: plank and bird-dog holds (15 × 2 = 30); Kick drills: board-assisted front crawl kick (20 × 1 = 20); Tread water dryland prep: egg-beater leg drill (10 × 2 = 20); Dryland shoulder mobility: arm circles and doorway stretches (10 × 2 = 20)."]} ctx=[object Response]
+ai_generations: plan claude-haiku-4-5-20251001 invalid in=2429 out=3785 $0.0214 problems: These quests are longer than the 45 minutes they have in a day: "Weekly swimming lesson with qualified instructor", "Peer or family observation: ask someone to watch a lesson". | A typical week of this plan needs 427 minutes (sum of estimate_minutes × times_per_week), but they have 225 minutes a week. Bring it to about 180 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Weekly swimming lesson with qualified instructor (60 × 1 = 60); Tread water dryland prep: egg-beater leg drill (10 × 5 = 50); Dryland shoulder mobility: arm circles and doorway stretches (10 × 5 = 50); Ankle mobility: calf and ankle flexibility series (10 × 5 = 50); Breathing rhythm: 3-3-3 drill in pool (15 × 2 = 30).
+ai_generations: plan_repair claude-haiku-4-5-20251001 invalid in=6527 out=3784 $0.0254 problems: These quests are longer than the 45 minutes they have in a day: "Monthly peer observation: ask someone to watch a lesson". | A typical week of this plan needs 307 minutes (sum of estimate_minutes × times_per_week), but they have 225 minutes a week. Bring it to about 180 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Weekly swimming lesson with qualified instructor (45 × 1 = 45); Core stability dryland: plank and bird-dog holds (15 × 2 = 30); Kick drills: board-assisted front crawl kick (20 × 1 = 20); Tread water dryland prep: egg-beater leg drill (10 × 2 = 20); Dryland shoulder mobility: arm circles and doorway stretches (10 × 2 = 20).
+total cost: $0.0468
+
+3) Live, Sonnet 5.5: every first attempt of the five evaluation runs was rejected for the same reason
+   (613/450, 485/360, 453/240, 324/225, 414/360 min). Four were repaired on the re-prompt; the vague
+   goal was still 24 min over (384/360) and fell back to the template. See generations.txt.
+
+4) Too little time to plan at all (15 min/week): refused before any model call, cost $0:
+   ERROR 422: {"error":"invalid_plan","problems":["15 minutes a week is too little for a drafted plan (minimum 50)."]}

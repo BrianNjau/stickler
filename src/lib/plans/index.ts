@@ -1,5 +1,5 @@
 // WP2: goals, plan creation (template or AI, one interface), review drafts, commit, today's list.
-export { createPlan, type CreatePlanResult, type PlanMode } from './createPlan';
+export { createPlan, fetchAiQuota, type AiQuota, type CreatePlanFailure, type CreatePlanResult, type PlanMode } from './createPlan';
 export { addDays, commitDraft, loadDraft, type CommitResult } from './draft';
 export {
   activeGoal,

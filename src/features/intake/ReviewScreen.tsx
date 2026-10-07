@@ -1,13 +1,18 @@
 import { Redirect, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/lib/auth';
+import { env } from '@/lib/env';
 import {
   BLOCK_BUDGET_MINUTES,
   clampEstimate,
   commitDraft,
+  constraintsOf,
+  fetchAiQuota,
+  getGoal,
+  updateGoal,
   ESTIMATE_MAX,
   ESTIMATE_MIN,
   type DraftMilestone,
@@ -82,12 +87,82 @@ function SectionTitle({ title, count }: { title: string; count: number }) {
   );
 }
 
+/**
+ * Shown only when the goal was too vague to plan well (the drafter asks exactly one question).
+ * Answering saves it on the goal and redrafts; skipping it is always fine.
+ */
+function ClarifyCard({ question, goalId }: { question: string; goalId: string }) {
+  const { tint } = useTheme();
+  const { goal, setGoal } = useIntake();
+  const [answer, setAnswer] = useState('');
+  const [left, setLeft] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const sky = tint('sky');
+
+  useEffect(() => {
+    let live = true;
+    fetchAiQuota().then((q) => live && q && setLeft(q.configured ? q.remaining : 0));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  const redraft = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const g = goal?.id === goalId ? goal : await getGoal(goalId);
+      if (!g) throw new Error('goal not found');
+      setGoal(await updateGoal(g.id, { constraints: { ...constraintsOf(g), clarification: { question, answer: answer.trim() } } }));
+      router.replace('/intake/generating');
+    } catch {
+      setBusy(false);
+      setError(copy.clarify.failed);
+    }
+  };
+
+  return (
+    <Card tint="sky">
+      <Text variant="label" fg={sky.fg} accessibilityRole="header">
+        {copy.clarify.eyebrow}
+      </Text>
+      <Text variant="h3" fg={sky.fg}>
+        {question}
+      </Text>
+      <Text variant="small" fg={sky.fg}>
+        {copy.clarify.body}
+      </Text>
+      {left === 0 ? (
+        <Text variant="small" fg={sky.fg}>
+          {copy.clarify.none}
+        </Text>
+      ) : (
+        <>
+          <Inline label={copy.clarify.label} value={answer} placeholder={copy.clarify.label} onChangeText={setAnswer} onSubmitEditing={() => answer.trim() && redraft()} />
+          {left !== null && (
+            <Text variant="small" fg={sky.fg}>
+              {copy.clarify.costs(left)}
+            </Text>
+          )}
+          {error && (
+            <Text variant="small" fg={sky.fg} accessibilityRole="alert">
+              {error}
+            </Text>
+          )}
+          <Button label={copy.clarify.cta} variant="secondary" size="md" loading={busy} disabled={!answer.trim() || busy} onPress={redraft} />
+        </>
+      )}
+    </Card>
+  );
+}
+
 let newIds = 0;
 
 function ReviewBody({ draft, original, uid }: { draft: PlanDraft; original: PlanDraft; uid: string }) {
   const { theme, tint } = useTheme();
   const insets = useSafeAreaInsets();
-  const { setDraft, reset } = useIntake();
+  const { setDraft, reset, notice } = useIntake();
   const [addTitle, setAddTitle] = useState('');
   const [addMinutes, setAddMinutes] = useState(25);
   const [busy, setBusy] = useState(false);
@@ -153,14 +228,31 @@ function ReviewBody({ draft, original, uid }: { draft: PlanDraft; original: Plan
         <Text color="ink2">{copy.body}</Text>
       </View>
 
+      {notice && (
+        <View style={[styles.note, { backgroundColor: butter.bg }]} accessibilityRole="alert">
+          <Text variant="small" fg={butter.fg}>
+            {notice}
+          </Text>
+        </View>
+      )}
+
       <Card tint="lilac">
         <Text variant="h3" fg={tint('lilac').fg}>
           {draft.northStar}
         </Text>
-        <Text variant="small" fg={tint('lilac').fg}>
-          {draft.summary}
-        </Text>
+        {!!draft.summary && (
+          <>
+            <Text variant="label" fg={tint('lilac').fg}>
+              {copy.why}
+            </Text>
+            <Text variant="small" fg={tint('lilac').fg}>
+              {draft.summary}
+            </Text>
+          </>
+        )}
       </Card>
+
+      {draft.clarifyingQuestion && env.aiMode === 'live' && <ClarifyCard question={draft.clarifyingQuestion} goalId={draft.goalId} />}
 
       <Card>
         <SectionTitle title={copy.stages} count={liveStages.length} />
@@ -200,6 +292,11 @@ function ReviewBody({ draft, original, uid }: { draft: PlanDraft; original: Plan
                 <Inline label={`When: ${m.title}`} value={m.targetLabel} placeholder="e.g. Mid-March" onChangeText={(v) => setMilestone(m.id, { targetLabel: v })} style={styles.grow} />
                 {m.isKeystone && <Pill label="Keystone" tint="butter" />}
               </View>
+            )}
+            {!m.deleted && !!m.coachNote && (
+              <Text variant="small" color="ink2" style={styles.coach}>
+                {m.coachNote}
+              </Text>
             )}
           </View>
         ))}
@@ -276,6 +373,7 @@ const styles = StyleSheet.create({
   grow: { flex: 1 },
   index: { width: 18 },
   whenLabel: { width: 44 },
+  coach: { paddingLeft: 44 + space.sm },
   inline: { minHeight: size.hit, borderWidth: 1, borderRadius: radius.control - 4, paddingHorizontal: space.md, fontSize: 15 },
   iconBtn: { minWidth: size.hit, height: size.hit, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.sm },
   add: { gap: space.sm, paddingTop: space.sm },

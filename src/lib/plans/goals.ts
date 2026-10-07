@@ -73,12 +73,18 @@ export async function unfinishedGoal(uid: string): Promise<GoalRow | null> {
   return goal;
 }
 
+const clarificationOf = (v: unknown): GoalConstraints['clarification'] =>
+  v && typeof v === 'object' && 'question' in v && 'answer' in v && typeof v.question === 'string' && typeof v.answer === 'string'
+    ? { question: v.question, answer: v.answer }
+    : undefined;
+
 export const constraintsOf = (g: GoalRow): GoalConstraints => {
   const c = g.constraints;
   if (!c || typeof c !== 'object' || Array.isArray(c)) return {};
   return {
     daily_minutes: typeof c.daily_minutes === 'number' ? c.daily_minutes : undefined,
     notes: typeof c.notes === 'string' ? c.notes : undefined,
+    clarification: clarificationOf(c.clarification),
   };
 };
 

@@ -537,6 +537,7 @@ export type Database = {
       }
       milestones: {
         Row: {
+          coach_note: string | null
           completed_at: string | null
           created_at: string
           detail: string | null
@@ -553,6 +554,7 @@ export type Database = {
           xp_value: number
         }
         Insert: {
+          coach_note?: string | null
           completed_at?: string | null
           created_at?: string
           detail?: string | null
@@ -569,6 +571,7 @@ export type Database = {
           xp_value?: number
         }
         Update: {
+          coach_note?: string | null
           completed_at?: string | null
           created_at?: string
           detail?: string | null
@@ -656,6 +659,7 @@ export type Database = {
       }
       plans: {
         Row: {
+          clarifying_question: string | null
           created_at: string
           generated_by: string
           goal_id: string
@@ -669,6 +673,7 @@ export type Database = {
           version: number
         }
         Insert: {
+          clarifying_question?: string | null
           created_at?: string
           generated_by?: string
           goal_id: string
@@ -682,6 +687,7 @@ export type Database = {
           version?: number
         }
         Update: {
+          clarifying_question?: string | null
           created_at?: string
           generated_by?: string
           goal_id?: string
@@ -1408,6 +1414,7 @@ export type Database = {
       fn_apply_template: {
         Args: { p_goal: string; p_template: string }
         Returns: {
+          clarifying_question: string | null
           created_at: string
           generated_by: string
           goal_id: string

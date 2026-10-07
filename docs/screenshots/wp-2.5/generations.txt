@@ -1,0 +1,291 @@
+WP2.5 evaluation generations: claude-sonnet-5-5, PLAN_EFFORT=low, max_tokens 8000, 2026-10-07
+Each run: a fresh anonymous trial user (timezone Africa/Nairobi), a goal with the stated inputs, one call to
+the deployed generate-plan Edge Function. Costs are the ai_generations rows for that user (USD).
+
+Summary
+  goal    seconds  result                         calls (cost)                         total
+  aws       53.2   plan saved (repaired once)     plan $0.0455 + repair $0.0658        $0.1113
+  acca      63.3   plan saved (repaired once)     plan $0.0471 + repair $0.0708        $0.1179
+  cake      81.9   plan saved (repaired once)     plan $0.0452 + repair $0.0674        $0.1126
+  swim      67.6   plan saved (repaired once)     plan $0.0415 + repair $0.0600        $0.1015
+  vague     49.6   invalid twice -> template      plan $0.0311 + repair $0.0396        $0.0707
+                                                                         round total   $0.5140
+
+Every first attempt overshot the weekly budget; the re-prompt fixed four of five. The vague goal missed
+by 24 minutes (384 of 360) on the repair and the app fell back to the closest template.
+
+==================================================================================
+== aws: "Get my AWS Solutions Architect Associate certification by March. About 90 minutes on weeknights." (53.2s) ==
+input: why="I want to move from helpdesk into a cloud engineering role." horizon=months daily=90min rest=[0,6] notes="I have used EC2 and S3 a bit at work. No Terraform yet."
+plan v1 model=claude-sonnet-5-5 active=false; quests retired: true
+North star: Pass the AWS Certified Solutions Architect Associate (SAA-C03) by March 2027 and take the first step from helpdesk into a cloud engineering role.
+Why this shape: You already touch EC2 and S3 at work, so the plan skips basics and starts with IAM and networking, where helpdesk experience gives the least cover. March is about 21 weeks away, which fits about 365 minutes a week: roughly 12 weeks of content, 4 weeks of hands-on labs and weak spots, then 4 weeks of practice exams. The quest library is a rotation pool, so most labs and drills appear only every second or fourth week, while course modules, practice questions and the mistake log are the steady habits. The exam is booked early so the date becomes real. Terraform is a small side thread, because it helps your cloud engineering goal but is not on the exam. Weekends stay free as you asked.
+Skills: IAM and security (iam_security) · VPC and networking (networking) · Compute and storage (compute_storage) · Resilient architecture (architecture) · Exam craft (exam_craft)
+Track: Pass SAA-C03 — Certified AWS Solutions Architect Associate by March 2027
+  1. Exam booked and foundations solid  [needs: Book the SAA-C03 exam for March; Build a locked-down IAM setup]
+  2. Network confidence  [needs: Build a two-tier VPC from scratch]
+  3. Compute, storage and data covered  [needs: Finish all compute, storage and database modules]
+  4. Resilient and cost-aware designs  [needs: Deploy a multi-AZ web app with auto scaling]
+  5. Exam-ready scores  [needs: Score 75% on first full practice exam; Score 82% on three practice exams in a row]
+  6. Certified  [needs: Pass the SAA-C03 exam]
+Milestones:
+  - Book the SAA-C03 exam for March — Mid-Oct 2026 (exam_craft)
+      note: Book before you feel ready. A real date stops the endless studying.
+  - Build a locked-down IAM setup — Early Nov 2026 (iam_security)
+      note: Write one policy by hand instead of copying; the exam tests reading JSON policies.
+  - Build a two-tier VPC from scratch — Early Dec 2026 (networking)
+      note: Most people skip NACLs. Break connectivity on purpose and fix it.
+  - Finish all compute, storage and database modules — Early Jan 2027 (compute_storage)
+      note: Keep a one-page table of when to choose each service.
+  - Deploy a multi-AZ web app with auto scaling — Early Feb 2027 [keystone] (architecture)
+      note: Tear it down after to avoid surprise bills. Set a budget alert first.
+  - Score 75% on first full practice exam — Mid-Feb 2027 (exam_craft)
+      note: The review is worth more than the test. Log why each miss happened.
+  - Score 82% on three practice exams in a row — Mid-Mar 2027 (exam_craft)
+      note: Do not repeat the same paper; you will memorise answers, not skills.
+  - Pass the SAA-C03 exam — Late Mar 2027 [keystone] (exam_craft)
+      note: Flag long scenario questions and return to them. Keep 15 minutes at the end.
+Quest library: 26 quests, 1160 min
+  · Multi-AZ RDS failover: trigger and observe (40m, lab, architecture)
+  · Auto Scaling target tracking policy: load test it (60m, lab, architecture)
+  · SQS vs SNS vs EventBridge: decoupling drill (30m, practice, architecture)
+  · Well-Architected pillar: read one and list trade-offs (35m, learn, architecture)
+  · Terraform: provision an S3 bucket and EC2 instance (60m, build, architecture)
+  · Disaster recovery: backup and restore vs pilot light vs warm standby (35m, learn, architecture)
+  · EC2 purchasing: On-Demand, Reserved, Spot cost cases (30m, practice, compute_storage)
+  · EBS volume types: gp3 vs io2 vs st1 comparison (35m, learn, compute_storage)
+  · S3 storage classes and lifecycle rules: configure (40m, lab, compute_storage)
+  · Lambda with SQS trigger: build and test (60m, build, compute_storage)
+  · RDS vs Aurora vs DynamoDB: choose for 8 scenarios (35m, practice, compute_storage)
+  · Course module: next video section with notes (60m, learn, compute_storage)
+  · Practice questions: 20 mixed SAA-C03 questions (40m, practice, exam_craft)
+  · Mistake log: re-answer last week's wrong questions (30m, review, exam_craft)
+  · Timed practice exam: 33 questions in 65 minutes (65m, practice, exam_craft)
+  · Cost check: review billing dashboard and budget alert (15m, admin, exam_craft)
+  · IAM policy JSON: write 3 least-privilege policies (45m, lab, iam_security)
+  · STS AssumeRole across two accounts: set it up (60m, lab, iam_security)
+  · KMS: customer keys vs AWS managed keys (45m, lab, iam_security)
+  · S3 bucket policies vs ACLs vs access points (40m, learn, iam_security)
+  · VPC peering vs Transit Gateway: build both (75m, lab, networking)
+  · Security groups vs NACLs: debug a blocked ping (40m, lab, networking)
+  · Route 53 routing policies: weighted, latency, failover (50m, lab, networking)
+  · CloudFront with S3 origin and OAC (60m, build, networking)
+  · ALB vs NLB vs Gateway LB: scenario drill (30m, practice, networking)
+  · VPC endpoints: gateway vs interface for S3 and DynamoDB (45m, lab, networking)
+ai_generations: plan claude-sonnet-5-5 invalid in=3107 out=3933 $0.0455 problems: A typical week of this plan needs 613 minutes (sum of estimate_minutes × times_per_week), but they have 450 minutes a week. Bring it to about 360 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Course module: next video section with notes (60 × 2 = 120); Practice questions: 20 mixed SAA-C03 questions (40 × 1.5 = 60); Full timed practice exam: 65 questions (65 × 0.5 = 33); Mistake log: re-answer last week's wrong questions (30 × 1 = 30); Route 53 routing policies: weighted, latency, failover (50 × 0.5 = 25).
+ai_generations: plan_repair claude-sonnet-5-5 ok in=7387 out=5101 $0.0658
+total cost: $0.1113
+
+==================================================================================
+== acca: "Pass the ACCA Financial Reporting (FR) exam in June" (63.3s) ==
+input: why="It is the last applied skills paper before I can start the strategic papers." horizon=months daily=60min rest=[0] notes="Failed it once with 46%. Consolidations and IFRS 16 leases are my weak spots."
+plan v1 model=claude-sonnet-5-5 active=false; quests retired: true
+North star: Sit ACCA FR in June 2027 and clear 50% comfortably, with consolidations and IFRS 16 leases turned from your weak spots into reliable marks, so you can move on to the Strategic Professional papers.
+Why this shape: You scored 46% last time, so you are close, and the gap is concentrated in consolidations and IFRS 16, which is good news. The plan fixes those two topics first (Oct to Dec), then rebuilds the rest of the syllabus (Jan to Mar), and spends April to June on timed past papers and a mock. The June exam is about 36 weeks away, which is enough at around 5 hours a week if most of your time goes to question practice instead of rereading. The quest library is a rotation: four core habits every week, with consolidations and leases weighted heaviest, and the other topics rotated in as needed. Book your June sitting early so the date feels real.
+Skills: Group accounts (consolidations) · Leases and instruments (leases_instruments) · Single entity standards (single_entity) · Analysis and reporting (analysis_reporting) · Exam technique (exam_technique)
+Track: ACCA FR June 2027 — Pass FR in June 2027 and unlock the strategic papers
+  1. Weak spots fixed  [needs: Group SOFP done unaided; IFRS 16 lessee and sale-and-leaseback correct]
+  2. Core standards rebuilt  [needs: Single entity standards question set at 70%]
+  3. Full syllabus covered  [needs: Cash flow and ratio questions at 70%; Exam booked for June]
+  4. Timed practice  [needs: First full timed past paper; Mock exam at 55% or above]
+  5. Exam ready  [needs: Sit ACCA FR exam]
+Milestones:
+  - Book the June exam and diagnose gaps — Mid-Oct 2026 (exam_technique)
+      note: Book now. A fixed date stops the plan drifting, and check the booking deadline.
+  - Group SOFP done unaided — Late Nov 2026 (consolidations)
+      note: Learn a fixed layout of workings (W1 to W5) and use it every time.
+  - IFRS 16 lessee and sale-and-leaseback correct — Mid-Dec 2026 [keystone] (leases_instruments)
+      note: Most errors are in the liability schedule. Draw the table before calculating.
+  - Single entity standards question set at 70% — Early Feb 2027 (single_entity)
+      note: Mark honestly against the ACCA answers and redo anything under 60%.
+  - Group SPLOCI, associates and disposals at 70% — Early Mar 2027 (consolidations)
+      note: Unrealised profit is the common slip, so always check the direction of the sale.
+  - Cash flow and ratio questions at 70% — Late Mar 2027 (analysis_reporting)
+      note: Interpretation marks need comments tied to the scenario, not just formulae.
+  - Exam booked for June — Early Apr 2027 (exam_technique)
+      note: Confirm the venue and ID requirements well before the date.
+  - First full timed past paper — Late Apr 2027 (exam_technique)
+      note: Expect a lower score. The value is in the timing and mark review.
+  - Mock exam at 55% or above — Early Jun 2027 [keystone] (exam_technique)
+      note: If under 55%, spend the last weeks on the weakest section, not on everything.
+  - Sit ACCA FR exam — Mid-Jun 2027 [keystone] (exam_technique)
+      note: Do Section B and C answers in the order you feel strongest, and watch the clock.
+Quest library: 25 quests, 835 min
+  · Statement of cash flows from group data: 1 question (45m, practice, analysis_reporting)
+  · Ratio analysis: write 8 comment lines on a scenario (35m, practice, analysis_reporting)
+  · IAS 1, IAS 8 and IFRS 5 summary page from memory (25m, review, analysis_reporting)
+  · Conceptual framework and ethics discussion answer (30m, practice, analysis_reporting)
+  · Consolidated SOFP: goodwill and NCI workings, 1 question (45m, practice, consolidations)
+  · Fair value adjustments on acquisition: 2 examples (35m, practice, consolidations)
+  · Intra-group unrealised profit in inventory: 3 drills (30m, practice, consolidations)
+  · Equity method for associates: 1 SOFP and SPLOCI (35m, practice, consolidations)
+  · Mid-year acquisition and disposal of subsidiary question (45m, practice, consolidations)
+  · Section B style question set: 15 objective test questions (30m, practice, exam_technique)
+  · Review errors log from last session (25m, review, exam_technique)
+  · Past paper Section C under timed conditions (45m, practice, exam_technique)
+  · Half mock paper: Sections A and B timed (45m, practice, exam_technique)
+  · Flashcards: standards and key definitions, 20 cards (15m, review, exam_technique)
+  · Weekly plan check and update progress log (15m, admin, exam_technique)
+  · IFRS 16 lease liability table: 3 lessee examples (40m, practice, leases_instruments)
+  · Read IFRS 16 lessee recognition and exemptions (30m, learn, leases_instruments)
+  · Sale and leaseback under IFRS 16: 1 question (40m, practice, leases_instruments)
+  · IFRS 9 financial assets and amortised cost: 2 examples (35m, practice, leases_instruments)
+  · IAS 16 revaluations and depreciation: 6 questions (35m, practice, single_entity)
+  · IAS 36 impairment of a CGU: 2 questions (35m, practice, single_entity)
+  · IAS 37 provisions and contingencies: scenario triage (25m, practice, single_entity)
+  · IAS 38 research versus development: 5 scenarios (25m, practice, single_entity)
+  · IFRS 15 five steps: performance obligations question (35m, practice, single_entity)
+  · IAS 12 deferred tax temporary differences: 2 questions (35m, practice, single_entity)
+ai_generations: plan claude-sonnet-5-5 invalid in=3099 out=4088 $0.0471 problems: A typical week of this plan needs 485 minutes (sum of estimate_minutes × times_per_week), but they have 360 minutes a week. Bring it to about 288 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Consolidated SOFP: goodwill and NCI workings, 1 question (45 × 1 = 45); IFRS 16 lease liability table: 3 lessee examples (40 × 1 = 40); Section B style question set: 15 objective test questions (30 × 1 = 30); Review errors log from last session (30 × 1 = 30); Full past paper section C under timed conditions (60 × 0.5 = 30).
+ai_generations: plan_repair claude-sonnet-5-5 ok in=7530 out=5577 $0.0708
+total cost: $0.1179
+
+==================================================================================
+== cake: "Launch a weekend cake business and land my first 10 paying customers" (81.9s) ==
+input: why="I bake for friends every weekend and want it to pay for itself." horizon=months daily=120min rest=[1,2,3,4,5] notes="Weekends only. I live in Nairobi, home kitchen, no car."
+plan v1 model=claude-sonnet-5-5 active=false; quests retired: true
+North star: By early 2027, your Nairobi home kitchen is running a weekend cake business with 10 paying customers, and your Saturday and Sunday baking covers its own costs.
+Why this shape: You already bake every weekend, so the plan starts with turning that habit into something sellable: a small menu, real costing, and a simple ordering and delivery routine that works without a car. Customers come before polish, so you test with friends at a fair price early, then ask for referrals and reviews. With 240 minutes across two weekend days, the quest library is a rotation pool: only a few light habits repeat weekly and most items come around every two to four weeks. Ten customers in about 22 weeks is realistic at this pace, and the final milestone lands well inside your 40-week limit. Check Kenya county business licensing and food handling requirements with the proper authorities, as I can't advise on legal matters.
+Skills: Menu and baking consistency (baking_menu) · Costing and pricing (costing) · Selling and outreach (sales) · Orders and delivery (logistics) · Brand and photos (brand)
+Track: Cake business launch — Ten paying customers from a home kitchen in Nairobi
+  1. Signature menu ready  [needs: Pick and test 3 signature cakes; Cost every cake in a spreadsheet]
+  2. Ready to take orders  [needs: Set price list and WhatsApp Business catalogue; Run a delivery test with boda and packaging]
+  3. First paying customers  [needs: First 3 paid orders]
+  4. Repeatable weekend rhythm  [needs: Open weekly order cutoff and booking sheet; First 6 paid orders]
+  5. Ten paying customers  [needs: 10 paying customers reached]
+Milestones:
+  - Pick and test 3 signature cakes — Late Oct 2026 (baking_menu)
+      note: Choose cakes that travel well and use ingredients you can buy easily in Nairobi.
+  - Cost every cake in a spreadsheet — Early Nov 2026 (costing)
+      note: Most home bakers forget packaging, gas and their own time and underprice.
+  - Set price list and WhatsApp Business catalogue — Mid-Nov 2026 (brand)
+      note: Keep it to a few options. Fewer choices means faster orders.
+  - Run a delivery test with boda and packaging — Late Nov 2026 (logistics)
+      note: Test with a heavy cake before a real customer finds the weak spot.
+  - First 3 paid orders — Early Dec 2026 [keystone] (sales)
+      note: Do not discount heavily. A fair price teaches you what the market accepts.
+  - Open weekly order cutoff and booking sheet — Mid-Jan 2027 (logistics)
+      note: A firm cutoff protects your weekdays and your sanity.
+  - First 6 paid orders — Early Feb 2027 [keystone] (sales)
+      note: Ask every happy customer for one referral at hand-over.
+  - 10 paying customers reached — Early March 2027 [keystone] (sales)
+      note: Count unique customers, not orders, and collect two reviews from them.
+Quest library: 20 quests, 705 min
+  · Weekend bake: vanilla sponge with Swiss meringue buttercream (75m, practice, baking_menu)
+  · Weekend bake: moist chocolate cake with ganache drip (75m, practice, baking_menu)
+  · Carrot cake with cream cheese frosting test (60m, practice, baking_menu)
+  · Level, crumb coat and smooth buttercream: practice 1 cake (45m, practice, baking_menu)
+  · Piping practice: rosettes, shells and borders (30m, practice, baking_menu)
+  · Photograph a finished cake by a window in natural light (30m, build, brand)
+  · Write WhatsApp Business catalogue entries and FAQ replies (40m, build, brand)
+  · Price ingredients at Gikomba, Toi Market and supermarket (60m, admin, costing)
+  · Update cost-per-cake sheet with this week's receipts (20m, admin, costing)
+  · Compare 5 Nairobi home bakers' prices and menus (40m, review, costing)
+  · Review the week: orders, money, what to change (20m, review, costing)
+  · Compare delivery options: boda, Little, Glovo and pickup point (40m, lab, logistics)
+  · Confirm weekend orders and delivery times by WhatsApp (20m, admin, logistics)
+  · Update order sheet: paid, delivered and notes (15m, admin, logistics)
+  · Plan shopping list and weekend bake timeline (20m, admin, logistics)
+  · Offer a tasting slice to 3 neighbours or colleagues (30m, outreach, sales)
+  · WhatsApp status post with this weekend's cake and order cutoff (15m, outreach, sales)
+  · Message 5 past friends who loved your cakes (25m, outreach, sales)
+  · Ask last customer for a review and a referral (15m, outreach, sales)
+  · Pitch an office birthday cake offer to one workplace group (30m, outreach, sales)
+ai_generations: plan claude-sonnet-5-5 invalid in=3108 out=3899 $0.0452 problems: A typical week of this plan needs 453 minutes (sum of estimate_minutes × times_per_week), but they have 240 minutes a week. Bring it to about 192 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Weekend bake: vanilla sponge with Swiss meringue buttercream (90 × 0.5 = 45); Weekend bake: moist chocolate cake with ganache drip (90 × 0.5 = 45); Level, crumb coat and smooth buttercream: practice 2 cakes (60 × 0.5 = 30); Piping practice: rosettes, shells and borders (30 × 1 = 30); Carrot cake with cream cheese frosting test (80 × 0.25 = 20).
+ai_generations: plan_repair claude-sonnet-5-5 ok in=7378 out=5263 $0.0674
+total cost: $0.1126
+
+==================================================================================
+== swim: "Learn to swim" (67.6s) ==
+input: why=null horizon=months daily=45min rest=[0,3] notes=null
+plan v1 model=claude-sonnet-5-5 active=false; quests retired: true
+North star: Swim 50 metres continuously and calmly in deep water, and float on your back to rest, by early 2027.
+Why this shape: You did not say whether you are a complete beginner, so this plan assumes you are and starts with water comfort before any strokes. Because swimming safely is best learned with a qualified instructor, the plan puts lessons first and uses your other sessions to repeat what the instructor teaches. The pace is steady at about 185 minutes a week, well inside your 225, with most sessions kept under 45 minutes so they fit your days. Dry-land drills and short reviews fill the gaps between pool visits, and most drills rotate in every few weeks. The final milestone lands around week 21, well inside your horizon, with spare weeks in case progress is slower.
+Clarifying question: Can you already float or put your face in the water, or are you starting from zero?
+Skills: Water comfort (water_comfort) · Breath control (breathing) · Stroke technique (strokes) · Swim endurance (endurance) · Water safety (water_safety)
+Track: Learn to swim — Swim 50 metres calmly and rest safely in deep water
+  1. Comfortable in the water  [needs: Book lessons with a qualified instructor; Blow bubbles with face submerged for 10 seconds]
+  2. Floating unaided  [needs: Back float unaided for 30 seconds]
+  3. Moving through the water  [needs: Glide and kick 10 metres with a board]
+  4. First real strokes  [needs: Swim 15 metres freestyle unassisted]
+  5. Deep water confidence  [needs: Tread water for 60 seconds]
+  6. Swimmer  [needs: Swim 50 metres continuously]
+Milestones:
+  - Book lessons with a qualified instructor — Mid-Oct 2026 (water_safety)
+      note: Pick a pool with a shallow end and a qualified instructor. Tell them you are a beginner so they pace you properly.
+  - Blow bubbles with face submerged for 10 seconds — Late Oct 2026 (breathing)
+      note: Most beginners hold their breath. Slow exhaling underwater is the habit that makes everything else easier.
+  - Back float unaided for 30 seconds — Late Nov 2026 [keystone] (water_comfort)
+      note: Lie back, look at the ceiling and push your belly up. Tension sinks you, so relax your jaw and shoulders.
+  - Glide and kick 10 metres with a board — Mid-Dec 2026 (strokes)
+      note: Kick from the hips with loose ankles. Small fast kicks beat big splashy ones.
+  - Swim 15 metres freestyle unassisted — Late Jan 2027 [keystone] (strokes)
+      note: Do not rush to add distance. Keep the breathing rhythm and stop when form slips.
+  - Tread water for 60 seconds — Mid-Feb 2027 (water_safety)
+      note: Practise next to the wall with your instructor present. Treading is the skill that makes the deep end less scary.
+  - Swim 50 metres continuously — Early March 2027 [keystone] (endurance)
+      note: Go slower than feels necessary. Beginners fail this by starting too fast, not by lacking fitness.
+Quest library: 23 quests, 545 min
+  · Bubble breathing at the bath or sink: 10 rounds (10m, practice, breathing)
+  · Side breathing drill: kick with one arm extended (30m, practice, breathing)
+  · Rhythmic breathing: 3 strokes then breathe, 8 reps (30m, practice, breathing)
+  · Freestyle 10 metres, rest, repeat 6 times (35m, practice, endurance)
+  · Easy continuous swim: add one length to last time (35m, practice, endurance)
+  · Stretch shoulders and calves before pool (10m, practice, endurance)
+  · Instructor lesson: current skill focus (45m, lab, strokes)
+  · Solo pool practice: repeat last lesson's drills (35m, practice, strokes)
+  · Dry-land freestyle arm circles in front of mirror (15m, practice, strokes)
+  · Kickboard flutter kick: 6 widths (30m, practice, strokes)
+  · Watch a freestyle technique video and note 3 cues (15m, learn, strokes)
+  · Backstroke kick on back: 4 lengths with board (30m, practice, strokes)
+  · Ask instructor for feedback and next-step goals (10m, review, strokes)
+  · Back float practice in shallow end: 8 attempts (30m, practice, water_comfort)
+  · Front float and push-off glide: 10 glides (30m, practice, water_comfort)
+  · Goggle fitting and fog test (15m, admin, water_comfort)
+  · Log session: what felt easier, what felt hard (10m, review, water_comfort)
+  · Submerge and open eyes to pick up a ring (25m, practice, water_comfort)
+  · Plan next pool visit: pack bag and check pool hours (10m, admin, water_comfort)
+  · Treading water by the wall: 5 rounds of 30 seconds (30m, practice, water_safety)
+  · Learn pool rules and lifeguard signals (15m, learn, water_safety)
+  · Deep end wall hold and breathing: 5 minutes (20m, practice, water_safety)
+  · Float to rest then swim on: 4 repeats (30m, practice, water_safety)
+ai_generations: plan claude-sonnet-5-5 invalid in=3043 out=3543 $0.0415 problems: A typical week of this plan needs 324 minutes (sum of estimate_minutes × times_per_week), but they have 225 minutes a week. Bring it to about 180 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Instructor lesson: current skill focus (45 × 1 = 45); Solo pool practice: repeat last lesson's drills (40 × 1 = 40); Dry-land freestyle arm circles in front of mirror (15 × 1.5 = 23); Bubble breathing at the bath or sink: 10 rounds (10 × 2 = 20); Freestyle 10 metres, rest, repeat 6 times (35 × 0.5 = 18).
+ai_generations: plan_repair claude-sonnet-5-5 ok in=6941 out=4611 $0.06
+total cost: $0.1015
+
+==================================================================================
+== vague: "Get better at stuff" (49.6s) ==
+input: why=null horizon=months daily=60min rest=[0] notes=null
+ERROR FunctionsHttpError Edge Function returned a non-2xx status code status=422 body={"error":"invalid_plan","problems":["A typical week of this plan needs 384 minutes (sum of estimate_minutes × times_per_week), but they have 360 minutes a week. Bring it to about 288 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Focused practice block on your weakest part (45 × 2 = 90); Log what worked and what stalled (10 × 3 = 30); Build a small project using the skill (60 × 0.5 = 30); Short drill on one sub-skill (25 × 1 = 25); Timed attempt under real conditions (45 × 0.5 = 23)."]} ctx=[object Response]
+ai_generations: plan claude-sonnet-5-5 invalid in=3038 out=2507 $0.0311 problems: There are 18 quest items; at least 20 are needed. | A typical week of this plan needs 414 minutes (sum of estimate_minutes × times_per_week), but they have 360 minutes a week. Bring it to about 288 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Daily focus practice block (45 × 3 = 135); Short drill on one sub-skill (25 × 2 = 50); Log what worked and what stalled (10 × 3 = 30); Study one expert example closely (30 × 1 = 30); Build a small project using the skill (60 × 0.5 = 30).
+ai_generations: plan_repair claude-sonnet-5-5 invalid in=5872 out=2790 $0.0396 problems: A typical week of this plan needs 384 minutes (sum of estimate_minutes × times_per_week), but they have 360 minutes a week. Bring it to about 288 by lowering times_per_week (most quests 0.25–0.5) or shortening quests. Biggest contributors: Focused practice block on your weakest part (45 × 2 = 90); Log what worked and what stalled (10 × 3 = 30); Build a small project using the skill (60 × 0.5 = 30); Short drill on one sub-skill (25 × 1 = 25); Timed attempt under real conditions (45 × 0.5 = 23).
+total cost: $0.0707
+
+==================================================================================
+Earlier round (same five goals, Sonnet 5.5 at its default effort = high). Adaptive thinking counts toward
+max_tokens, so AWS, ACCA and cake used all 8000 output tokens before finishing the JSON (twice each).
+That is why PLAN_EFFORT=low exists. Round total $0.6579:
+== aws: "Get my AWS Solutions Architect Associate certification by March. About 90 minutes on weeknights." (114.9s) ==
+ai_generations: plan claude-sonnet-5-5 invalid in=3107 out=8000 $0.0862 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+ai_generations: plan_repair claude-sonnet-5-5 invalid in=3252 out=8000 $0.0865 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+total cost: $0.1727
+== acca: "Pass the ACCA Financial Reporting (FR) exam in June" (114.1s) ==
+ai_generations: plan claude-sonnet-5-5 invalid in=3099 out=8000 $0.0862 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+ai_generations: plan_repair claude-sonnet-5-5 invalid in=4452 out=8000 $0.0889 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+total cost: $0.1751
+== cake: "Launch a weekend cake business and land my first 10 paying customers" (135.7s) ==
+ai_generations: plan claude-sonnet-5-5 invalid in=3108 out=8000 $0.0862 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+ai_generations: plan_repair claude-sonnet-5-5 error in=null out=null $null problems: fetch: Signal timed out.
+total cost: $0.0862
+== swim: "Learn to swim" (126.2s) ==
+ai_generations: plan claude-sonnet-5-5 invalid in=3043 out=8000 $0.0861 problems: The plan was cut off at the output limit. Make it shorter: fewer quests and one-line details.
+ai_generations: plan_repair claude-sonnet-5-5 ok in=5753 out=6127 $0.0728
+total cost: $0.1589
+== vague: "Get better at stuff" (58.5s) ==
+ai_generations: plan claude-sonnet-5-5 ok in=3038 out=5890 $0.065
+total cost: $0.0650
+
+That round's vague plan did validate first time and asked its clarifying question:
+North star: By late January 2027, one skill you chose is measurably better than on day one, shown by a recorded retest against your own baseline.
+Why this shape: "Get better at stuff" is too broad to train, so the plan starts by choosing one skill and measuring where you are today. Improvement comes from short, focused practice on your weakest part, plus feedback from someone else, so those come before volume. You have 60 minutes on six days, but the quest library uses about 295 of your 360 weekly minutes, leaving slack for tired days. The pace is about four months, with a baseline early, a midpoint retest, a targeted fix for your biggest weakness, and a final retest. Once you name the skill, the quests can be rewritten with its real drills, tools and standards.
+Clarifying question: Which one skill do you most want to improve first (for example guitar, Spanish, running, coding, writing)?

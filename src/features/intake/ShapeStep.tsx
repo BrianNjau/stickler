@@ -1,10 +1,10 @@
-import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { env } from '@/lib/env';
-import { createPlan, firstShape, listShapes, loadDraft, type PlanShape } from '@/lib/plans';
+import { createPlan, fetchAiQuota, firstShape, listShapes, loadDraft, type AiQuota, type PlanShape } from '@/lib/plans';
 import { formatDuration } from '@/lib/time';
 import { Button, Card, Nimbus, Pill, radius, ScreenHeader, size, Skeleton, space, Text, useTheme } from '@/ui';
 import { ArrowRight } from '@/ui/icons';
@@ -13,7 +13,9 @@ import { shapeCopy, shapeDuration } from './copy';
 import { useIntake } from './IntakeContext';
 
 type Fallback = keyof typeof shapeCopy.fallback;
-const isFallback = (v: unknown): v is Fallback => v === 'rate_limited' || v === 'failed' || v === 'offline';
+const isFallback = (v: unknown): v is Fallback => typeof v === 'string' && Object.prototype.hasOwnProperty.call(shapeCopy.fallback, v);
+const day = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : null;
 
 /**
  * The shape picker: the three starters, as a first-class choice. When AI_MODE is live, a drafted
@@ -28,17 +30,33 @@ export function ShapeStep() {
   const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [quota, setQuota] = useState<AiQuota | null>(null);
+  const aiLive = env.aiMode === 'live';
 
   useEffect(() => {
     listShapes().then(setShapes, () => setLoadError(true));
   }, []);
+  // On focus, not mount: the picker stays mounted under the review, and drafts get used meanwhile.
+  useFocusEffect(
+    useCallback(() => {
+      if (!aiLive) return;
+      let live = true;
+      fetchAiQuota().then(
+        (q) => live && setQuota(q),
+        () => live && setQuota(null),
+      );
+      return () => {
+        live = false;
+      };
+    }, [aiLive]),
+  );
 
   if (!goal) return <Redirect href="/intake" />;
 
   const first = shapes ? firstShape(`${goal.raw_input} ${goal.why ?? ''}`, shapes) : null;
   const suggested = first?.key ?? null;
   const ordered = shapes ? [...shapes].sort((a, b) => Number(b.key === suggested) - Number(a.key === suggested)) : [];
-  const aiLive = env.aiMode === 'live';
+  const canDraft = !quota || (quota.configured && quota.remaining > 0);
 
   const choose = async (key: string) => {
     setBusy(key);
@@ -141,7 +159,18 @@ export function ShapeStep() {
               </Text>
             </View>
           </View>
-          <Button label={shapeCopy.aiCta} icon={ArrowRight} iconPosition="trailing" disabled={!!busy} onPress={() => router.push('/intake/generating')} />
+          {quota && (
+            <Text variant="small" fg={sky.fg}>
+              {!quota.configured
+                ? shapeCopy.aiOff
+                : quota.remaining > 0
+                  ? shapeCopy.aiLeft(quota.remaining, quota.limit)
+                  : shapeCopy.aiNoneLeft(day(quota.resetsAt))}
+            </Text>
+          )}
+          {canDraft && (
+            <Button label={shapeCopy.aiCta} icon={ArrowRight} iconPosition="trailing" disabled={!!busy} onPress={() => router.push('/intake/generating')} />
+          )}
         </Card>
       )}
     </ScrollView>

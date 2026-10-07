@@ -1,0 +1,15 @@
+shape picker: AI card says "3 of 3 drafts left this week."; template cards before it: 4
+ai-generating: 83.5s on screen → /intake/review
+review 1: rationale label shown=true; clarifying question=none
+ai-generating: 35.5s on screen → /intake/review
+review 2: clarifying question now=still asked; notice=none
+back on the picker: "2 of 3 drafts left this week."
+third draft from "another device": ok in 67.5s
+rate limited → /intake/shape?fallback=rate_limited; note: "You’ve used this week’s drafted plans. The shapes below are instant and just as editable."
+settings: "No drafted plans left this week; the next one frees up Wed, Oct 14. The plan shapes are always available."
+ai_generations: plan claude-haiku-4-5-20251001 invalid in=2442 out=3997 $0.0224
+ai_generations: plan_repair claude-haiku-4-5-20251001 invalid in=6556 out=3148 $0.0223
+ai_generations: plan claude-haiku-4-5-20251001 ok in=2442 out=2740 $0.0161
+ai_generations: plan claude-haiku-4-5-20251001 invalid in=2442 out=3580 $0.0203
+ai_generations: plan_repair claude-haiku-4-5-20251001 ok in=6300 out=2354 $0.0181
+no page errors
