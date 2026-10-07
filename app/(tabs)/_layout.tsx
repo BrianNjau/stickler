@@ -58,6 +58,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="character" options={{ title: 'You', tabBarIcon: icon(CircleUser), tabBarLabel: label('You') }} />
       <Tabs.Screen name="settings" options={{ href: null, title: 'Settings' }} />
       <Tabs.Screen name="intake" options={{ href: null, title: 'New goal' }} />
+      <Tabs.Screen name="add-email" options={{ href: null, title: 'Add an email' }} />
+      <Tabs.Screen name="confirm-email" options={{ href: null, title: 'Confirm your email' }} />
     </Tabs>
   );
 }

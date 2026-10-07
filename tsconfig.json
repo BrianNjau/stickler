@@ -12,5 +12,6 @@
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
   // Edge Functions are Deno code with URL imports; they are type-checked by Deno, not tsc.
-  "exclude": ["node_modules", "dist", "supabase/functions"]
+  // tests/ runs under Node and has its own tsconfig (pnpm typecheck checks both).
+  "exclude": ["node_modules", "dist", "supabase/functions", "tests"]
 }

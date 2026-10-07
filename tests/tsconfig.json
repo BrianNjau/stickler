@@ -1,0 +1,12 @@
+{
+  // Tests run under plain Node (node --experimental-strip-types --test), so they get Node's types
+  // and explicit .ts import specifiers; the app's tsconfig never sees Node globals.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["./**/*.ts"],
+  "exclude": []
+}

@@ -12,29 +12,38 @@ import { motion, palette, radius, Text, useReducedMotion } from '@/ui';
 const SPLASH_IMAGE = require('../../../assets/splash-icon.png');
 const IMAGE_SIZE = 200;
 
-/** docs/design/Splash: mark and wordmark on ink, a short amber bar, the tagline in mono. */
-export function BrandSplash({ onDone }: { onDone: () => void }) {
+/**
+ * docs/design/Splash: mark and wordmark on ink, a short amber bar, the tagline in mono.
+ * Stays up until `ready` (the persisted session has been restored), so the app never flashes the
+ * wrong screen. The bar runs to 80% while waiting and completes once ready.
+ */
+export function BrandSplash({ ready, onDone }: { ready: boolean; onDone: () => void }) {
   const reduced = useReducedMotion();
   const insets = useSafeAreaInsets();
   const progress = useSharedValue(0);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
+    if (!reduced) progress.set(withTiming(0.8, { duration: motion.reward }));
+  }, [reduced, progress]);
+
+  useEffect(() => {
+    if (!ready) return;
     // Reduce Motion: no bar, no fade — straight into the app.
     if (reduced) {
       onDone();
       return;
     }
-    progress.set(withTiming(1, { duration: motion.reward }));
+    progress.set(withSequence(withTiming(0.8, { duration: motion.reward }), withTiming(1, { duration: motion.state })));
     opacity.set(
       withSequence(
-        withTiming(1, { duration: motion.reward }),
+        withTiming(1, { duration: motion.reward + motion.state }),
         withTiming(0, { duration: motion.enter }, (finished) => {
           if (finished) scheduleOnRN(onDone);
         }),
       ),
     );
-  }, [reduced, onDone, progress, opacity]);
+  }, [ready, reduced, onDone, progress, opacity]);
 
   const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   const fill = useAnimatedStyle(() => ({ width: `${progress.get() * 100}%` }));
@@ -43,7 +52,7 @@ export function BrandSplash({ onDone }: { onDone: () => void }) {
     <Animated.View
       style={[StyleSheet.absoluteFill, styles.screen, fade]}
       accessible
-      accessibilityLabel={`${brand.name}. ${brand.splashLine}`}
+      accessibilityLabel={`${brand.name}. ${brand.tagline}`}
     >
       <Image source={SPLASH_IMAGE} style={styles.image} resizeMode="contain" />
       <View style={[styles.footer, { bottom: 56 + insets.bottom }]}>
@@ -51,7 +60,8 @@ export function BrandSplash({ onDone }: { onDone: () => void }) {
           <Animated.View style={[styles.fill, fill]} />
         </View>
         <Text variant="label" fg={palette.dark.ink3}>
-          {brand.splashLine}
+          {/* Mono labels drop the full stop, as drawn on the splash artboard. */}
+          {brand.tagline.replace(/\.$/, '')}
         </Text>
       </View>
     </Animated.View>

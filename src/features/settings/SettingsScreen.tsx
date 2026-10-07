@@ -1,94 +1,258 @@
-import type { ReactNode } from 'react';
+import { router } from 'expo-router';
+import { useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { dayProfileFrom, dayProfilePatches, dayProfileProblem, ProfileForm, type DayProfile } from '@/features/profile';
+import { saveAccount, useAccount, type Account, type SettingsPatch } from '@/lib/account';
+import { signOut, useAuth } from '@/lib/auth';
 import { env } from '@/lib/env';
 import { resetIntro } from '@/lib/firstRun';
-import { Button, Card, Nimbus, Pill, Screen, ScreenHeader, Snitch, space, Text, useTheme } from '@/ui';
+import {
+  Button,
+  Card,
+  Nimbus,
+  Pill,
+  radius,
+  Screen,
+  ScreenHeader,
+  Segmented,
+  Sheet,
+  Skeleton,
+  Snitch,
+  space,
+  Text,
+  ToggleRow,
+  useTheme,
+  type NimbusMood,
+  type SnitchMood,
+} from '@/ui';
+import { LogOut, Mail } from '@/ui/icons';
 
-function Row({ label, value, last }: { label: string; value: ReactNode; last?: boolean }) {
-  const { theme } = useTheme();
+import { humourLevels, snitchLevels } from './copy';
+
+interface Prefs {
+  snitchIntensity: number;
+  humourLevel: number;
+  attentionChecks: boolean;
+  notifications: boolean;
+}
+
+const prefsFrom = (a: Account): Prefs => ({
+  snitchIntensity: a.settings.snitch_intensity,
+  humourLevel: a.settings.humour_level,
+  attentionChecks: a.settings.attention_checks_on,
+  notifications: a.settings.notifications_on,
+});
+
+const snitchMood = (n: number): SnitchMood => (n === 0 ? 'asleep' : n === 3 ? 'angry' : 'watch');
+const nimbusMood = (n: number): NimbusMood => (['idle', 'focus', 'happy', 'cool'] as const)[n] ?? 'happy';
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <View style={[styles.row, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.line }]}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      {typeof value === 'string' ? (
-        <Text variant="small" color="ink3">
-          {value}
-        </Text>
-      ) : (
-        value
+    <Card>
+      <Text variant="label" color="ink3" accessibilityRole="header">
+        {title}
+      </Text>
+      {children}
+    </Card>
+  );
+}
+
+/** Everything editable, starting from the loaded rows. One Save, lit only when something changed. */
+function EditableSettings({ account }: { account: Account }) {
+  const { tint } = useTheme();
+  const [day, setDay] = useState<DayProfile>(() => dayProfileFrom(account));
+  const [prefs, setPrefs] = useState<Prefs>(() => prefsFrom(account));
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Compared against the latest saved rows, so a save clears "unsaved changes".
+  const saved = useMemo(() => JSON.stringify({ day: dayProfileFrom(account), prefs: prefsFrom(account) }), [account]);
+  const dirty = JSON.stringify({ day, prefs }) !== saved;
+  const problem = dayProfileProblem(day);
+
+  const save = async () => {
+    if (problem) return;
+    setSaving(true);
+    setMessage(null);
+    const patches = dayProfilePatches(day);
+    const settings: SettingsPatch = {
+      ...patches.settings,
+      snitch_intensity: prefs.snitchIntensity,
+      humour_level: prefs.humourLevel,
+      attention_checks_on: prefs.attentionChecks,
+      notifications_on: prefs.notifications,
+    };
+    const r = await saveAccount(account.uid, patches.profile, settings);
+    setSaving(false);
+    setMessage(r.ok ? { ok: true, text: 'Saved.' } : { ok: false, text: r.message });
+  };
+
+  const blush = tint('blush');
+  const snitch = snitchLevels[prefs.snitchIntensity] ?? snitchLevels[2];
+  const humour = humourLevels[prefs.humourLevel] ?? humourLevels[2];
+
+  return (
+    <>
+      <Section title="Your day">
+        <ProfileForm value={day} onChange={setDay} />
+      </Section>
+
+      <Section title="The Snitch">
+        <View style={styles.mascotRow}>
+          <Snitch mood={snitchMood(prefs.snitchIntensity)} size={52} />
+          <View style={styles.grow}>
+            <Text variant="h3">{snitch.name}</Text>
+            <Text variant="small" color="ink2">
+              {snitch.about}
+            </Text>
+          </View>
+        </View>
+        <Segmented
+          label="Snitch intensity"
+          options={snitchLevels.map((l, i) => ({ value: i, label: l.short }))}
+          value={prefs.snitchIntensity}
+          onChange={(v) => setPrefs({ ...prefs, snitchIntensity: v })}
+        />
+      </Section>
+
+      <Section title="Nimbus">
+        <View style={styles.mascotRow}>
+          <Nimbus mood={nimbusMood(prefs.humourLevel)} size={60} />
+          <View style={styles.grow}>
+            <Text variant="h3">{humour.name}</Text>
+            <Text variant="small" color="ink2">
+              {humour.about}
+            </Text>
+          </View>
+        </View>
+        <Segmented
+          label="Humour level"
+          options={humourLevels.map((l, i) => ({ value: i, label: l.short }))}
+          value={prefs.humourLevel}
+          onChange={(v) => setPrefs({ ...prefs, humourLevel: v })}
+        />
+      </Section>
+
+      <Section title="During a block">
+        <ToggleRow
+          label="Attention checks"
+          description="A quick “still with us?” every 18–30 minutes."
+          value={prefs.attentionChecks}
+          onChange={(v) => setPrefs({ ...prefs, attentionChecks: v })}
+        />
+        <ToggleRow
+          label="Notifications"
+          description="Round ends, block starts and the evening sweep. Never more than two nudges a day."
+          value={prefs.notifications}
+          onChange={(v) => setPrefs({ ...prefs, notifications: v })}
+        />
+      </Section>
+
+      {(problem || (message && !message.ok)) && (
+        <View style={[styles.note, { backgroundColor: blush.bg }]} accessibilityRole="alert" accessibilityLiveRegion="polite">
+          <Text variant="small" fg={blush.fg}>
+            {problem ?? message?.text}
+          </Text>
+        </View>
       )}
-    </View>
+      <Button
+        label={dirty ? 'Save changes' : message?.ok ? 'Saved' : 'No changes to save'}
+        loading={saving}
+        disabled={!dirty || !!problem}
+        onPress={save}
+      />
+    </>
   );
 }
 
-function MascotRow({ avatar, name, about }: { avatar: ReactNode; name: string; about: string }) {
-  return (
-    <View style={styles.mascot}>
-      {avatar}
-      <View style={styles.mascotText}>
-        <Text variant="h3">{name}</Text>
-        <Text variant="small" color="ink2">
-          {about}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-const modePill = (mode: 'mock' | 'live') => <Pill label={mode === 'live' ? 'Live' : 'Offline mock'} tint={mode === 'live' ? 'mint' : undefined} />;
-
-// Stub: everything here becomes editable in WP1 (user_settings). Nothing on this screen pretends to be a control yet.
 export function SettingsScreen() {
+  const { user, isAnonymous } = useAuth();
+  const { account, stale } = useAccount();
+  const [confirmOut, setConfirmOut] = useState(false);
+
+  const doSignOut = async () => {
+    setConfirmOut(false);
+    await signOut(); // routing returns to sign-in
+  };
+
   return (
     <Screen>
       <ScreenHeader title="Settings" back={{ fallbackHref: '/character' }} />
 
-      <Card>
-        <Text variant="label" color="ink3">
-          Your day
-        </Text>
-        <View>
-          <Row label="Timezone" value="Set at sign-in" />
-          <Row label="Workday" value="Set at sign-in" />
-          <Row label="Daily capacity" value="Set at sign-in" last />
+      <Section title="Account">
+        {isAnonymous ? (
+          <>
+            <Text>You’re trying Stickler without an account.</Text>
+            <Text variant="small" color="ink2">
+              Add an email to keep everything — same plan, same progress — and sign in on other devices.
+            </Text>
+            <Button label="Add an email" icon={Mail} variant="secondary" size="md" onPress={() => router.push('/add-email')} />
+          </>
+        ) : (
+          <View style={styles.between}>
+            <Text style={styles.grow}>{user?.email ?? 'Signed in'}</Text>
+            <Pill label="Email" tint="mint" />
+          </View>
+        )}
+      </Section>
+
+      {account ? (
+        <EditableSettings key={account.uid} account={account} />
+      ) : (
+        <Card accessible accessibilityLabel="Loading your settings" accessibilityState={{ busy: true }}>
+          <Skeleton width="30%" height={12} />
+          <Skeleton height={52} rounded={radius.control} />
+          <Skeleton height={52} rounded={radius.control} />
+          {stale && (
+            <Text variant="small" color="ink2">
+              Can’t reach the server right now. Your settings will appear when you’re back online.
+            </Text>
+          )}
+        </Card>
+      )}
+
+      <Section title="Services">
+        <View style={styles.between}>
+          <Text style={styles.grow}>Plan generation</Text>
+          <Pill label={env.aiMode === 'live' ? 'Live' : 'Offline mock'} tint={env.aiMode === 'live' ? 'mint' : undefined} />
         </View>
-      </Card>
-
-      <Card>
-        <Text variant="label" color="ink3">
-          Mascots
-        </Text>
-        <MascotRow
-          avatar={<Nimbus mood="happy" size={56} />}
-          name="Nimbus"
-          about="Praise, puns and recovery coaching."
-        />
-        <MascotRow
-          avatar={<Snitch mood="watch" size={56} />}
-          name="The Snitch"
-          about="Audits the paperwork. You will be able to switch it off completely."
-        />
-      </Card>
-
-      <Card>
-        <Text variant="label" color="ink3">
-          Services
-        </Text>
-        <View>
-          <Row label="Plan generation" value={modePill(env.aiMode)} />
-          <Row label="Commute times" value={modePill(env.mapsMode)} last />
+        <View style={styles.between}>
+          <Text style={styles.grow}>Commute times</Text>
+          <Pill label={env.mapsMode === 'live' ? 'Live' : 'Offline mock'} tint={env.mapsMode === 'live' ? 'mint' : undefined} />
         </View>
-      </Card>
+      </Section>
 
+      <Button
+        label="Sign out"
+        icon={LogOut}
+        variant="destructive"
+        onPress={() => (isAnonymous ? setConfirmOut(true) : doSignOut())}
+      />
       {/* Development only: the intro shows once per install, so this is the way to see it again. */}
-      {__DEV__ && <Button label="Replay intro (dev)" variant="secondary" size="md" onPress={resetIntro} />}
+      {__DEV__ && <Button label="Replay intro (dev)" variant="quiet" size="md" onPress={resetIntro} />}
+
+      <Sheet visible={confirmOut} title="Sign out of this trial?" onClose={() => setConfirmOut(false)}>
+        <Text color="ink2">
+          A trial has no email, so there’s no way back into it once you sign out. Add an email first and you keep
+          everything.
+        </Text>
+        <Button
+          label="Add an email instead"
+          onPress={() => {
+            setConfirmOut(false);
+            router.push('/add-email');
+          }}
+        />
+        <Button label="Sign out and leave the trial" variant="destructive" onPress={doSignOut} />
+      </Sheet>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 48, paddingVertical: space.sm },
-  rowLabel: { flex: 1 },
-  mascot: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  mascotText: { flex: 1, gap: 2 },
+  between: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 36 },
+  grow: { flex: 1 },
+  mascotRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  note: { borderRadius: radius.control, padding: space.lg },
 });

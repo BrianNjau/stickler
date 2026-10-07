@@ -1,7 +1,6 @@
-// Installs a synchronous, SQLite-backed `localStorage` on iOS/Android (a no-op on web).
-import 'expo-sqlite/localStorage/install';
-
 import { useSyncExternalStore } from 'react';
+
+import { kv } from './kv';
 
 // Device-local on purpose: the intro is about this install, not the account.
 const INTRO_SEEN_KEY = 'stickler.intro.seen';
@@ -9,22 +8,15 @@ const INTRO_SEEN_KEY = 'stickler.intro.seen';
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
-function read(): boolean {
-  try {
-    return localStorage.getItem(INTRO_SEEN_KEY) === '1';
-  } catch {
-    // Storage unavailable (private mode, quota): treat as seen rather than trap the user in the intro.
-    return true;
-  }
-}
+// If storage is unavailable, kv.get returns null and the intro shows; finishing it still moves the
+// user on through the in-memory notify below, so nobody is trapped.
+let memorySeen = false;
+const read = (): boolean => memorySeen || kv.get(INTRO_SEEN_KEY) === '1';
 
 function write(seen: boolean): void {
-  try {
-    if (seen) localStorage.setItem(INTRO_SEEN_KEY, '1');
-    else localStorage.removeItem(INTRO_SEEN_KEY);
-  } catch {
-    // Best effort; the in-memory notify below still moves the user on.
-  }
+  memorySeen = seen;
+  if (seen) kv.set(INTRO_SEEN_KEY, '1');
+  else kv.remove(INTRO_SEEN_KEY);
   notify();
 }
 

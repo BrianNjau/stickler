@@ -1,5 +1,4 @@
-// WP0.6: brand splash, first-run intro, sign-in entry. WP1 adds auth and first-launch capture;
-// WP2 adds goal intake -> createPlan(goal, mode).
+// WP0.6: brand splash and the first-run intro. Sign-in lives in features/auth (WP1);
+// goal intake -> createPlan(goal, mode) arrives in WP2.
 export { BrandSplash } from './BrandSplash';
 export { IntroScreen } from './IntroScreen';
-export { SignInScreen } from './SignInScreen';

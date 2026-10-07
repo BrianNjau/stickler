@@ -1,0 +1,4 @@
+{
+  "//": "Tests run under plain Node as ES modules (node --experimental-strip-types --test).",
+  "type": "module"
+}

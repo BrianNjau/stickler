@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
+import { useSnitchEnabled } from './mascotPrefs';
 import { Nimbus, type NimbusMood } from './mascots/Nimbus';
 import { Snitch, type SnitchMood } from './mascots/Snitch';
 import { Text } from './Text';
@@ -25,6 +26,9 @@ const AVATAR = 60;
  */
 export function MascotBubble(props: BubbleProps) {
   const { tint: tintOf } = useTheme();
+  const snitchEnabled = useSnitchEnabled();
+  // snitch_intensity = 0 means silent, everywhere: the bubble is simply not there.
+  if (props.persona === 'snitch' && !snitchEnabled) return null;
   const { children, avatar = true, side = 'left' } = props;
   const who = props.persona === 'nimbus' ? 'Nimbus' : 'The Snitch';
   const nimbusTint = props.persona === 'nimbus' ? (props.tint ?? 'sky') : 'sky';

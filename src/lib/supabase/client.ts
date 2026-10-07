@@ -1,11 +1,9 @@
-// Installs a SQLite-backed `localStorage` on iOS/Android; a no-op on web, which has its own.
-import 'expo-sqlite/localStorage/install';
-
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';
 
 import type { Database } from '@shared/database.types';
 
+import { secureSessionStorage } from '../auth/secureStorage';
 import { env } from '../env';
 
 export type Supabase = SupabaseClient<Database>;
@@ -21,12 +19,16 @@ function create(): Supabase | null {
 
   const client = createClient<Database>(env.supabaseUrl, env.supabaseAnonKey, {
     auth: {
-      storage: localStorage,
+      // Native: Keychain / Keystore via expo-secure-store. Web: the browser's localStorage (SecureStore
+      // has no web implementation).
+      storage: Platform.OS === 'web' ? undefined : secureSessionStorage,
       // App-owned key instead of the default `sb-<project-ref>-auth-token`. Changing it signs everyone out.
       storageKey: 'stickler-auth-token',
       persistSession: true,
       autoRefreshToken: true,
-      // Magic-link redirects land in the URL on web; native handles them via deep links (WP1).
+      // PKCE for the OAuth redirect (social sign-in, behind SOCIAL_AUTH_ENABLED). Email OTP is unaffected.
+      flowType: 'pkce',
+      // OAuth redirects land in the URL on web; native exchanges the code itself (src/lib/auth/social.ts).
       detectSessionInUrl: Platform.OS === 'web',
     },
   });
