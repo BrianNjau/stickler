@@ -15,6 +15,8 @@ export interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> 
   variant?: ButtonVariant;
   size?: 'lg' | 'md';
   icon?: LucideIcon;
+  /** Leading by default; trailing for forward actions ("Let's go →"). */
+  iconPosition?: 'leading' | 'trailing';
   loading?: boolean;
   /** Full width by default; pass false for an inline button. */
   block?: boolean;
@@ -41,6 +43,7 @@ export function Button({
   variant = 'primary',
   size: s = 'lg',
   icon: Icon,
+  iconPosition = 'leading',
   loading = false,
   block = true,
   disabled,
@@ -97,7 +100,7 @@ export function Button({
         ]}
       >
         {/* The label stays mounted while loading so the button keeps its width. */}
-        <View style={[styles.content, loading && styles.hidden]}>
+        <View style={[styles.content, iconPosition === 'trailing' && styles.reverse, loading && styles.hidden]}>
           {Icon && <Icon size={18} color={c.fg} strokeWidth={2.2} />}
           <Text variant={s === 'lg' ? 'h3' : 'small'} fg={c.fg} style={styles.label}>
             {label}
@@ -121,6 +124,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   content: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  reverse: { flexDirection: 'row-reverse' },
   label: { textAlign: 'center' },
   hidden: { opacity: 0 },
   disabled: { opacity: 0.45 },

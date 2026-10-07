@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { env } from '@/lib/env';
-import { Card, Nimbus, Pill, Screen, ScreenHeader, Snitch, space, Text, useTheme } from '@/ui';
+import { resetIntro } from '@/lib/firstRun';
+import { Button, Card, Nimbus, Pill, Screen, ScreenHeader, Snitch, space, Text, useTheme } from '@/ui';
 
 function Row({ label, value, last }: { label: string; value: ReactNode; last?: boolean }) {
   const { theme } = useTheme();
@@ -78,6 +79,9 @@ export function SettingsScreen() {
           <Row label="Commute times" value={modePill(env.mapsMode)} last />
         </View>
       </Card>
+
+      {/* Development only: the intro shows once per install, so this is the way to see it again. */}
+      {__DEV__ && <Button label="Replay intro (dev)" variant="secondary" size="md" onPress={resetIntro} />}
     </Screen>
   );
 }

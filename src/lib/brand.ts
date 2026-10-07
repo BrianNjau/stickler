@@ -3,4 +3,6 @@
 export const brand = {
   name: 'Stickler',
   tagline: 'Plans that fit the day you actually have.',
+  /** The shorter line drawn on docs/design/Splash. */
+  splashLine: 'Plans that fit the day you have',
 } as const;

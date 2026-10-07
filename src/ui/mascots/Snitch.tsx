@@ -8,9 +8,10 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 
 import { useReducedMotion } from '../motion';
+import { useTheme } from '../theme';
 import { palette } from '../tokens';
 import { useBlink } from './useBlink';
 
@@ -22,13 +23,12 @@ export interface SnitchProps {
   size?: number;
 }
 
-// Fixed colours: the Snitch is the same camera in both themes.
+// Drawn to docs/design (Intro 3, Sign in): a rounded camera tile, one lens, one LED, and brows
+// for when it has opinions. Fixed colours: the Snitch is the same camera in both themes.
 const c = {
-  housing: palette.dark.focusCard,
-  edge: palette.dark.line,
+  housing: palette.light.ink,
   lens: palette.dark.ink,
   iris: palette.light.snitch,
-  irisAngry: palette.dark.snitch,
   pupil: palette.light.snitchBg,
   glint: palette.light.surface,
   led: palette.dark.snitch,
@@ -36,10 +36,11 @@ const c = {
   zz: palette.dark.ink3,
 };
 
-const LID_FULL = 42;
+const LENS = { cx: 40, cy: 44, r: 22 };
 
 export function Snitch({ mood = 'watch', size = 80 }: SnitchProps) {
   const reduced = useReducedMotion();
+  const { isDark } = useTheme();
   const clipId = `lens${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const lidBlink = useBlink(!reduced && mood === 'watch', 7000, 180);
   const ledDim = useBlink(!reduced && mood !== 'asleep', 1200, 600);
@@ -65,7 +66,7 @@ export function Snitch({ mood = 'watch', size = 80 }: SnitchProps) {
 
   const motionStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt.get()}deg` }] }));
 
-  const lid = mood === 'asleep' ? 1 : mood === 'angry' ? 0.34 : lidBlink ? 1 : 0;
+  const lid = mood === 'asleep' || lidBlink ? 1 : 0;
   const ledOn = mood !== 'asleep' && !ledDim;
 
   return (
@@ -74,29 +75,37 @@ export function Snitch({ mood = 'watch', size = 80 }: SnitchProps) {
         width="100%"
         height="100%"
         viewBox="0 0 80 80"
-        style={mood === 'asleep' ? { opacity: 0.8, transform: [{ scale: 0.78 }] } : undefined}
+        style={mood === 'asleep' ? { opacity: 0.8, transform: [{ scale: 0.86 }] } : undefined}
       >
         <Defs>
           <ClipPath id={clipId}>
-            <Circle cx={40} cy={43} r={20} />
+            <Circle cx={LENS.cx} cy={LENS.cy} r={LENS.r} />
           </ClipPath>
         </Defs>
-        <Line x1={24} y1={12} x2={19} y2={4} stroke={c.edge} strokeWidth={3} strokeLinecap="round" />
-        <Circle cx={19} cy={4} r={3} fill={c.edge} />
-        <Rect x={5} y={11} width={70} height={63} rx={18} fill={c.housing} stroke={c.edge} strokeWidth={1.5} />
-        <Circle cx={40} cy={43} r={20} fill={c.lens} />
+        {/* On a dark ground the ink tile needs an edge to stay a tile. */}
+        <Rect
+          x={4}
+          y={4}
+          width={72}
+          height={72}
+          rx={19}
+          fill={c.housing}
+          stroke={isDark ? palette.dark.line2 : undefined}
+          strokeWidth={isDark ? 1.5 : 0}
+        />
+        <Circle cx={LENS.cx} cy={LENS.cy} r={LENS.r} fill={c.lens} />
         <G clipPath={`url(#${clipId})`}>
-          <Circle cx={40} cy={43} r={10} fill={mood === 'angry' ? c.irisAngry : c.iris} />
-          <Circle cx={40} cy={43} r={4.5} fill={c.pupil} />
-          <Circle cx={43.5} cy={39.5} r={2} fill={c.glint} />
-          {lid > 0 && <Rect x={19} y={22} width={42} height={LID_FULL * lid} fill={c.housing} />}
+          <Circle cx={LENS.cx} cy={LENS.cy} r={11.5} fill={c.iris} />
+          <Circle cx={LENS.cx} cy={LENS.cy} r={5.5} fill={c.pupil} />
+          <Circle cx={44.5} cy={39.5} r={2.2} fill={c.glint} />
+          {lid > 0 && <Rect x={18} y={22} width={44} height={44 * lid} fill={c.housing} />}
         </G>
-        <Circle cx={64} cy={21} r={3.5} fill={ledOn ? c.led : c.ledOff} />
         {mood === 'angry' && (
-          <Path d="M20 20 L36 27 M60 20 L44 27" stroke={c.led} strokeWidth={3.5} strokeLinecap="round" fill="none" />
+          <Path d="M16 16 L33 25 M47 25 L62 17" stroke={c.led} strokeWidth={4.5} strokeLinecap="round" fill="none" />
         )}
+        <Circle cx={62} cy={17} r={4} fill={ledOn ? c.led : c.ledOff} />
         {mood === 'asleep' && (
-          <SvgText x={60} y={9} fontSize={12} fontWeight="700" fill={c.zz}>
+          <SvgText x={64} y={12} fontSize={11} fontWeight="700" fill={c.zz}>
             z
           </SvgText>
         )}
