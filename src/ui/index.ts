@@ -1,3 +1,4 @@
+export { BrandMark, type BrandMarkProps, type BrandMarkWay } from './BrandMark';
 export { Button, type ButtonProps, type ButtonVariant } from './Button';
 export { Card, type CardProps } from './Card';
 export { haptic, type HapticEvent } from './haptics';

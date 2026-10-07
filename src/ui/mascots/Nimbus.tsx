@@ -11,6 +11,7 @@ import Animated, {
 import Svg, { Circle, Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { useReducedMotion } from '../motion';
+import type { TintName } from '../theme';
 import { palette, skillColors } from '../tokens';
 import { useBlink } from './useBlink';
 
@@ -20,19 +21,23 @@ export interface NimbusProps {
   mood?: NimbusMood;
   /** Rendered width in px; height follows the 80×60 artboard. */
   size?: number;
+  /** Body colour. On the artboards Nimbus takes the tint of the bubble or card it sits beside. */
+  fill?: TintName | 'paper';
 }
 
-// Nimbus keeps the same colours in light and dark: it is a character, not a surface.
+// Drawn to docs/design (Intro 3, Sign in): ink outline, tinted body, peach cheeks when pleased.
+// Colours are fixed across themes: Nimbus is a character, not a surface.
 const c = {
-  body: palette.light.surface,
-  outline: palette.light.line2,
   ink: palette.light.ink,
-  cheek: palette.light.onBlush,
+  cheek: palette.light.amber,
   rain: skillColors[0].solid,
   zzz: palette.light.ink3,
 };
 
-export function Nimbus({ mood = 'idle', size = 80 }: NimbusProps) {
+const BODY =
+  'M18 50c-8 0-14-6-14-13 0-7 5-12 12-13 1-9 9-16 19-16 8 0 14 4 17 11 1 0 2 0 3 0 8 0 15 7 15 15 0 9-7 16-15 16z';
+
+export function Nimbus({ mood = 'idle', size = 80, fill = 'paper' }: NimbusProps) {
   const reduced = useReducedMotion();
   const blinking = useBlink(!reduced && mood !== 'sleep', 4500, 140);
   const y = useSharedValue(0);
@@ -52,44 +57,40 @@ export function Nimbus({ mood = 'idle', size = 80 }: NimbusProps) {
   }, [mood, reduced, y]);
 
   const motionStyle = useAnimatedStyle(() => ({ transform: [{ translateY: y.get() }] }));
-  const eyeRy = mood === 'sleep' || blinking ? 0.45 : 3.6;
-  const mouth = { stroke: c.ink, strokeWidth: 2.4, strokeLinecap: 'round' as const, fill: 'none' };
+  const eyeRy = mood === 'sleep' || blinking ? 0.45 : 3.4;
+  const body = fill === 'paper' ? palette.light.ground : palette.light[fill];
+  const mouth = { stroke: c.ink, strokeWidth: 2.6, strokeLinecap: 'round' as const, fill: 'none' };
 
   return (
     <Animated.View style={[{ width: size, height: (size * 60) / 80 }, motionStyle]} accessible={false}>
       <Svg width="100%" height="100%" viewBox="0 0 80 60">
-        <Path
-          d="M18 50c-8 0-14-6-14-13 0-7 5-12 12-13 1-9 9-16 19-16 8 0 14 4 17 11 1 0 2 0 3 0 8 0 15 7 15 15 0 9-7 16-15 16z"
-          fill={c.body}
-          stroke={c.outline}
-          strokeWidth={1.5}
-        />
+        <Path d={BODY} fill={body} stroke={c.ink} strokeWidth={3} strokeLinejoin="round" />
         {mood === 'happy' && (
-          <G opacity={0.35}>
-            <Circle cx={25} cy={38} r={3.5} fill={c.cheek} />
-            <Circle cx={54} cy={38} r={3.5} fill={c.cheek} />
+          <G opacity={0.45}>
+            <Circle cx={24} cy={38} r={3.8} fill={c.cheek} />
+            <Circle cx={56} cy={38} r={3.8} fill={c.cheek} />
           </G>
         )}
-        <Ellipse cx={32} cy={31} rx={2.8} ry={eyeRy} fill={c.ink} />
-        <Ellipse cx={47} cy={31} rx={2.8} ry={eyeRy} fill={c.ink} />
+        <Ellipse cx={33} cy={30} rx={2.6} ry={eyeRy} fill={c.ink} />
+        <Ellipse cx={47} cy={30} rx={2.6} ry={eyeRy} fill={c.ink} />
         {mood === 'cool' && (
-          <Path d="M24 27h31v3c0 4-3 6-6.5 6S43 34 42 31h-5c-1 3-3 5-6.5 5S24 34 24 30z" fill={c.ink} />
+          <Path d="M24 26h31v3c0 4-3 6-6.5 6S43 33 42 30h-5c-1 3-3 5-6.5 5S24 33 24 29z" fill={c.ink} />
         )}
 
-        {(mood === 'idle' || mood === 'sleep') && <Path d="M35 41h9" {...mouth} />}
-        {(mood === 'focus' || mood === 'cool') && <Path d="M34 40q5.5 4 11 0" {...mouth} />}
-        {mood === 'happy' && <Path d="M33 39q6.5 7 13 0z" fill={c.ink} />}
-        {mood === 'sad' && <Path d="M34 43q5.5-4 11 0" {...mouth} />}
+        {(mood === 'idle' || mood === 'sleep') && <Path d="M35.5 40h9" {...mouth} />}
+        {(mood === 'focus' || mood === 'cool') && <Path d="M34.5 38.5q5.5 4.5 11 0" {...mouth} />}
+        {mood === 'happy' && <Path d="M34 37.5q6 7 12 0z" fill={c.ink} stroke={c.ink} strokeWidth={1} strokeLinejoin="round" />}
+        {mood === 'sad' && <Path d="M34.5 42q5.5-4 11 0" {...mouth} />}
 
         {mood === 'sad' && (
           <G stroke={c.rain} strokeWidth={2} strokeLinecap="round">
-            <Line x1={26} y1={53} x2={25} y2={57} />
-            <Line x1={40} y1={53} x2={39} y2={57} />
-            <Line x1={54} y1={53} x2={53} y2={57} />
+            <Line x1={26} y1={54} x2={25} y2={58} />
+            <Line x1={40} y1={54} x2={39} y2={58} />
+            <Line x1={54} y1={54} x2={53} y2={58} />
           </G>
         )}
         {mood === 'sleep' && (
-          <SvgText x={62} y={10} fontSize={11} fontWeight="700" fill={c.zzz}>
+          <SvgText x={62} y={9} fontSize={11} fontWeight="700" fill={c.zzz}>
             z z
           </SvgText>
         )}

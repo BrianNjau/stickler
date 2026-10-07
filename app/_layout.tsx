@@ -6,14 +6,16 @@ import { IBMPlexSans_400Regular } from '@expo-google-fonts/ibm-plex-sans/400Regu
 import { IBMPlexSans_500Medium } from '@expo-google-fonts/ibm-plex-sans/500Medium';
 import { IBMPlexSans_600SemiBold } from '@expo-google-fonts/ibm-plex-sans/600SemiBold';
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, Slot, ThemeProvider as NavThemeProvider, type Theme as NavTheme } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavThemeProvider, type Theme as NavTheme } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { palette, ThemeProvider, type } from '@/ui';
+import { BrandSplash } from '@/features/onboarding';
+import { useIntroSeen } from '@/lib/firstRun';
+import { palette, ThemeProvider, type, useReducedMotion } from '@/ui';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -38,21 +40,36 @@ export default function RootLayout() {
     [type.monoBold]: IBMPlexMono_600SemiBold,
   });
   const settled = loaded || !!error;
+  const introSeen = useIntroSeen();
+  const reduced = useReducedMotion();
+  const [splashDone, setSplashDone] = useState(false);
+  const endSplash = useCallback(() => setSplashDone(true), []);
 
   useEffect(() => {
     if (error) console.warn('[fonts] brand fonts failed to load; using system fonts.', error);
+    // The JS brand splash (same image, same ink) is on screen by now, so the hand-off is seamless.
     if (settled) SplashScreen.hideAsync().catch(() => {});
   }, [settled, error]);
 
-  // Hold the splash until fonts settle so nothing reflows. A load failure still renders, in system fonts.
+  // Hold the native splash until fonts settle so nothing reflows. A load failure still renders, in system fonts.
   if (!settled) return null;
 
   return (
     <GestureHandlerRootView style={styles.fill}>
       <ThemeProvider fontsReady={loaded}>
         <NavThemeProvider value={navTheme(isDark)}>
-          <StatusBar style={isDark ? 'light' : 'dark'} />
-          <Slot />
+          <StatusBar style={!splashDone || isDark ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false, animation: reduced ? 'none' : 'default' }}>
+            {/* First run: only the intro exists until it has been seen (or skipped) once. */}
+            <Stack.Protected guard={!introSeen}>
+              <Stack.Screen name="intro" />
+            </Stack.Protected>
+            <Stack.Protected guard={introSeen}>
+              <Stack.Screen name="(tabs)" />
+            </Stack.Protected>
+            <Stack.Screen name="sign-in" />
+          </Stack>
+          {!splashDone && <BrandSplash onDone={endSplash} />}
         </NavThemeProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
