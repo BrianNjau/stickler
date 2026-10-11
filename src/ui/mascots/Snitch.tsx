@@ -1,16 +1,8 @@
 import { useEffect, useId } from 'react';
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, ClipPath, Defs, G, Path, Rect, Text as SvgText } from 'react-native-svg';
 
-import { useReducedMotion } from '../motion';
+import { useMotion } from '../motion';
 import { useTheme } from '../theme';
 import { palette } from '../tokens';
 import { useBlink } from './useBlink';
@@ -39,7 +31,8 @@ const c = {
 const LENS = { cx: 40, cy: 44, r: 22 };
 
 export function Snitch({ mood = 'watch', size = 80 }: SnitchProps) {
-  const reduced = useReducedMotion();
+  const m = useMotion();
+  const reduced = m.reduced;
   const { isDark } = useTheme();
   const clipId = `lens${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const lidBlink = useBlink(!reduced && mood === 'watch', 7000, 180);
@@ -49,20 +42,22 @@ export function Snitch({ mood = 'watch', size = 80 }: SnitchProps) {
   useEffect(() => {
     cancelAnimation(tilt);
     tilt.set(0);
-    if (reduced || mood !== 'angry') return;
+    if (mood !== 'angry') return;
     tilt.set(
-      withRepeat(
-        withSequence(
-          withTiming(-3, { duration: 60 }),
-          withTiming(3, { duration: 60 }),
-          withTiming(-2, { duration: 60 }),
-          withTiming(0, { duration: 60 }),
-          withDelay(2100, withTiming(0, { duration: 0 })),
+      m.animate(0, ({ withRepeat, withSequence, withTiming, withDelay }) =>
+        withRepeat(
+          withSequence(
+            withTiming(-3, { duration: 60 }),
+            withTiming(3, { duration: 60 }),
+            withTiming(-2, { duration: 60 }),
+            withTiming(0, { duration: 60 }),
+            withDelay(2100, withTiming(0, { duration: 0 })),
+          ),
+          -1,
         ),
-        -1,
       ),
     );
-  }, [mood, reduced, tilt]);
+  }, [mood, m, tilt]);
 
   const motionStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${tilt.get()}deg` }] }));
 

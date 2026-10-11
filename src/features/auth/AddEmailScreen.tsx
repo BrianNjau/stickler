@@ -59,7 +59,7 @@ export function AddEmailScreen() {
             </Text>
           </View>
         )}
-        <Button label={copy.send} loading={busy} onPress={send} />
+        <Button hero label={copy.send} loading={busy} onPress={send} />
       </Card>
     </Screen>
   );

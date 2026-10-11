@@ -16,24 +16,29 @@ export interface ScreenHeaderProps {
   right?: ReactNode;
 }
 
-export function ScreenHeader({ title, eyebrow, back, right }: ScreenHeaderProps) {
+/** "‹ Back": history first, `fallbackHref` when there is none (a web deep link). */
+export function BackLink({ fallbackHref }: { fallbackHref: Href }) {
   const { theme } = useTheme();
   return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Back"
+      hitSlop={8}
+      onPress={() => (router.canGoBack() ? router.back() : router.replace(fallbackHref))}
+      style={styles.back}
+    >
+      <ChevronLeft size={20} color={theme.ink} strokeWidth={2.4} />
+      <Text variant="small" color="ink">
+        Back
+      </Text>
+    </Pressable>
+  );
+}
+
+export function ScreenHeader({ title, eyebrow, back, right }: ScreenHeaderProps) {
+  return (
     <View style={styles.wrap}>
-      {back && (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          hitSlop={8}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace(back.fallbackHref))}
-          style={styles.back}
-        >
-          <ChevronLeft size={20} color={theme.ink} strokeWidth={2.4} />
-          <Text variant="small" color="ink">
-            Back
-          </Text>
-        </Pressable>
-      )}
+      {back && <BackLink fallbackHref={back.fallbackHref} />}
       <View style={styles.row}>
         <View style={styles.titles}>
           {eyebrow && (

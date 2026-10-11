@@ -86,6 +86,8 @@ supabase functions deploy commute-check
 Then flip the modes in `.env.local` one at a time: `EXPO_PUBLIC_AI_MODE=live` first, verify a real
 plan generates and `ai_generations` logs a cost, and leave `EXPO_PUBLIC_MAPS_MODE=mock` until WP9.
 
-**The templates stay.** With AI live, the goal wizard should still offer the three templates as a
-first-class choice, not a fallback: they are instant, free and deterministic, and most goals fit
-one. Use the model for goals that genuinely do not.
+**Drafting comes first; the templates stay.** Since WP2.7 the shape picker leads with "Let Stickler
+draft it for you" (users want less work), and the four templates follow as a full, first-class
+choice: instant, free and deterministic. Expect more drafts per user than the "only when no
+template fits" assumption above: budget for most new goals being drafted (about $0.11 each on
+Sonnet 5.5), still capped at 3 per user per week and 150 calls a day.

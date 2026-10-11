@@ -1,16 +1,8 @@
 import { useEffect } from 'react';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
-import { useReducedMotion } from '../motion';
+import { useMotion } from '../motion';
 import type { TintName } from '../theme';
 import { palette, skillColors } from '../tokens';
 import { useBlink } from './useBlink';
@@ -38,23 +30,27 @@ const BODY =
   'M18 50c-8 0-14-6-14-13 0-7 5-12 12-13 1-9 9-16 19-16 8 0 14 4 17 11 1 0 2 0 3 0 8 0 15 7 15 15 0 9-7 16-15 16z';
 
 export function Nimbus({ mood = 'idle', size = 80, fill = 'paper' }: NimbusProps) {
-  const reduced = useReducedMotion();
+  const m = useMotion();
+  const reduced = m.reduced;
   const blinking = useBlink(!reduced && mood !== 'sleep', 4500, 140);
   const y = useSharedValue(0);
 
   useEffect(() => {
     cancelAnimation(y);
     y.set(0);
-    if (reduced) return;
-    const ease = { easing: Easing.inOut(Easing.sin) };
-    if (mood === 'focus' || mood === 'cool') {
-      y.set(withRepeat(withSequence(withTiming(-4, { duration: 1600, ...ease }), withTiming(0, { duration: 1600, ...ease })), -1));
-    } else if (mood === 'happy') {
-      y.set(withRepeat(withSequence(withTiming(-10, { duration: 220 }), withTiming(0, { duration: 380 })), 2));
-    } else if (mood === 'sleep') {
-      y.set(withRepeat(withSequence(withTiming(-2, { duration: 2400, ...ease }), withTiming(0, { duration: 2400, ...ease })), -1));
-    }
-  }, [mood, reduced, y]);
+    // Gentle hover per mood. Under Reduce Motion, animate() returns 0 and the cloud holds still.
+    y.set(
+      m.animate(0, ({ withRepeat, withSequence, withTiming, Easing }) => {
+        const ease = { easing: Easing.inOut(Easing.sin) };
+        if (mood === 'focus' || mood === 'cool')
+          return withRepeat(withSequence(withTiming(-4, { duration: 1600, ...ease }), withTiming(0, { duration: 1600, ...ease })), -1);
+        if (mood === 'happy') return withRepeat(withSequence(withTiming(-10, { duration: 220 }), withTiming(0, { duration: 380 })), 2);
+        if (mood === 'sleep')
+          return withRepeat(withSequence(withTiming(-2, { duration: 2400, ...ease }), withTiming(0, { duration: 2400, ...ease })), -1);
+        return 0;
+      }),
+    );
+  }, [mood, m, y]);
 
   const motionStyle = useAnimatedStyle(() => ({ transform: [{ translateY: y.get() }] }));
   const eyeRy = mood === 'sleep' || blinking ? 0.45 : 3.4;

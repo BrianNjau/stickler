@@ -17,6 +17,7 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
 
 5. `docs/KEYS_AND_LIMITS.md` — spend caps and quotas. Never raise a cap without asking.
 6. `docs/design/*.png` — the canvas exports. Build what is drawn.
+7. `docs/POLISH.md` and `docs/DESIGN_SYSTEM.md` — depth, the one gradient, motion, states.
 
 ## Non-negotiables
 
@@ -62,6 +63,16 @@ absurd cloud) and **The Snitch** (deadpan surveillance camera).
 - The Today screen is the app. Everything else is a tab away and must never trap the user: the nav
   is always visible, every sheet closes, nothing requires a refresh.
 - Motion is the reward. Respect Reduce Motion: the app must be fully usable with animations off.
+  Animate only through `useMotion()` from `@/ui`; lint blocks Reanimated's builders anywhere else.
+- **One gradient, four places.** `liveGradient` may appear only on a running progress arc, the
+  primary action while a session is live, the FAB and the streak pill, plus the radial session glow
+  behind a ring. Every other gradient is forbidden (lint: gradients live only in `src/ui/gradient.tsx`).
+- **One hero per screen, never two** (`<Card elevation="hero">` or `<Button hero>`). Everything else
+  is flat; `raised` is for sheets and the FAB.
+- **No spinners.** Loading is a `<Skeleton>` in the real layout; an empty screen is an
+  `<EmptyState>` (mascot, one line, one action); an error is an `<ErrorState>`. Every number that
+  changes is a `<StatNumber>`.
+- The session screen is the one full-screen, always-dark place with no tab bar; it closes with ×.
 - Never show an impossible day without offering the cut. Honesty about time is the product.
 - Copy is short, specific and funny. Never scold, never shame, never guilt-trip about streaks.
 

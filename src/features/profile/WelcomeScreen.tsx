@@ -41,7 +41,7 @@ function FirstRunForm({ account }: { account: Account }) {
           </Text>
         </View>
       )}
-      <Button label="Save and continue" loading={saving} disabled={!!problem} onPress={save} />
+      <Button hero label="Save and continue" loading={saving} disabled={!!problem} onPress={save} />
     </>
   );
 }

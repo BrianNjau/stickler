@@ -1,0 +1,15 @@
+export const vaultCopy = {
+  title: 'Reward vault',
+  intro: 'Blocks earn tokens. Tokens open crates. The crate picks, not you — that’s the whole trick.',
+  tokensReady: (n: number) => (n === 1 ? 'token ready' : 'tokens ready'),
+  open: 'Open a crate',
+  opening: 'Opening…',
+  empty: 'No tokens left. Finish a block to earn the next one.',
+  lastClaimed: 'Last claimed',
+  justWon: 'The crate says',
+  trophies: 'Trophy cabinet',
+  focusHours: 'focus hours',
+  bestCombo: 'best combo',
+  dayStreak: 'day streak',
+  liveEmpty: { line: 'No tokens yet. Finish a block and the first one lands here, ready for a crate.', action: 'See today' },
+} as const;

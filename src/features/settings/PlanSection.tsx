@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { env } from '@/lib/env';
 import { activeGoal, fetchAiQuota, type AiQuota, type GoalRow } from '@/lib/plans';
-import { Button, Card, Skeleton, Text } from '@/ui';
+import { Button, Card, Skeleton, Text, useTheme } from '@/ui';
 
 const day = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : null;
@@ -28,6 +28,7 @@ export function PlanSection() {
   const [state, setState] = useState<{ goal: GoalRow; version: number } | null | 'loading'>('loading');
   const [quota, setQuota] = useState<AiQuota | null | 'loading'>('loading');
   const aiLive = env.aiMode === 'live';
+  const { theme, hero } = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -52,17 +53,20 @@ export function PlanSection() {
   const drafts = aiLive ? quotaLine(quota) : null;
 
   return (
-    <Card>
-      <Text variant="label" color="ink3" accessibilityRole="header">
+    // Settings' hero: the plan is the most consequential thing on this screen.
+    <Card elevation="hero">
+      <Text variant="label" fg={theme.amber} accessibilityRole="header">
         Your plan
       </Text>
       {state === 'loading' ? (
-        <Skeleton width="60%" height={16} />
+        <Skeleton onHero width="60%" height={16} />
       ) : state ? (
         <>
-          <Text variant="h3">{state.goal.title}</Text>
-          <Text variant="small" color="ink2">
-            Plan version <Text variant="mono">{state.version}</Text>. Changing it starts a new version; this one is kept.
+          <Text variant="h3" fg={hero.fg}>
+            {state.goal.title}
+          </Text>
+          <Text variant="small" fg={hero.fg2}>
+            Plan version <Text variant="mono" fg={hero.fg}>{state.version}</Text>. Changing it starts a new version; this one is kept.
           </Text>
           <Button
             label="Change my plan"
@@ -73,11 +77,18 @@ export function PlanSection() {
         </>
       ) : (
         <>
-          <Text color="ink2">No plan yet.</Text>
+          <Text fg={hero.fg2}>No plan yet.</Text>
           <Button label="Set a goal" variant="secondary" size="md" onPress={() => router.push('/intake')} />
         </>
       )}
-      {aiLive && (quota === 'loading' ? <Skeleton width="70%" height={14} /> : <Text variant="small" color="ink2">{drafts}</Text>)}
+      {aiLive &&
+        (quota === 'loading' ? (
+          <Skeleton onHero width="70%" height={14} />
+        ) : (
+          <Text variant="small" fg={hero.fg2}>
+            {drafts}
+          </Text>
+        ))}
     </Card>
   );
 }

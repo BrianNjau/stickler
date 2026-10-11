@@ -109,6 +109,7 @@ export function IntroScreen() {
             ))}
           </View>
           <Button
+            hero
             label={index === LAST ? 'Let’s go' : 'Next'}
             icon={index === LAST ? ArrowRight : undefined}
             iconPosition="trailing"

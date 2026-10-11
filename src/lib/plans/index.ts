@@ -16,5 +16,5 @@ export {
 export { firstShape, suggestShape, summariseShape, type PlanShape } from './shapes';
 export { listShapes } from './templates';
 export { titleFrom } from './titles';
-export { loadToday, type TodayBlock, type TodayData, type TodayTask } from './today';
+export { loadDay, loadStats, loadToday, type PlayerStats, type TodayBlock, type TodayData, type TodayTask } from './today';
 export * from './types';

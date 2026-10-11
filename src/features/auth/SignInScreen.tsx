@@ -125,7 +125,7 @@ export function SignInScreen() {
             textContentType="emailAddress"
             returnKeyType="send"
           />
-          <Button label={busy === 'code' ? copy.sending : copy.send} loading={busy === 'code'} onPress={send} disabled={!!busy} />
+          <Button hero label={busy === 'code' ? copy.sending : copy.send} loading={busy === 'code'} onPress={send} disabled={!!busy} />
           {problem && (
             <View style={[styles.problem, { backgroundColor: blush.bg }]} accessibilityRole="alert" accessibilityLiveRegion="assertive">
               <Text variant="small" fg={blush.fg}>

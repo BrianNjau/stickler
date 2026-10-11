@@ -1,0 +1,25 @@
+Reduce Motion proof (production web build, 390 x 844, Edge headless)
+Distinct visual frames in each window: every element's transform, opacity, SVG stroke-dashoffset and
+inline width, sampled on every animation frame. 1 = nothing moved. Under Reduce Motion, values that
+change because state changed (a tick, the clock) change once, at once, with no frames in between.
+
+moment | normal | Reduce Motion
+--- | --- | ---
+Screen enter, ring fill, numbers (Today mount) | 84 (of 84 frames) | 1 (of 100 frames)
+Idle Today (nothing should move) | 1 (of 74 frames) | 1 (of 74 frames)
+Task ticked (bounce, +20 XP float) | 82 (of 82 frames) | 1 (of 81 frames)
+Boss ticked (bounce, float, 12-piece burst) | 82 (of 82 frames) | 1 (of 82 frames)
+Level up takeover (rays, count-up, burst) | 91 (of 91 frames) | 1 (of 91 frames)
+Left/Done switch (thumb slides) | 54 (of 54 frames) | 1 (of 55 frames)
+Day strip selection (pill grows) | 45 (of 46 frames) | 1 (of 46 frames)
+Session start (ring fills) | 73 (of 76 frames) | 4 (of 82 frames)
+Round ends (pulse, glow) incl. the 4 Hz clock | 135 (of 135 frames) | 7 (of 146 frames)
+
+No page errors in either run.
+
+Structural proof: lint refuses the ways around the rules (a probe file, linted, then deleted):
+  2:10  error  No spinners. Use <Skeleton> in the real layout shape                                                                                  no-restricted-syntax
+  3:10  error  'withSpring' import from 'react-native-reanimated' is restricted. Animate through useMotion() from @/ui so Reduce Motion is honoured  no-restricted-imports
+  3:22  error  'withTiming' import from 'react-native-reanimated' is restricted. Animate through useMotion() from @/ui so Reduce Motion is honoured  no-restricted-imports
+  4:10  error  Gradients live in src/ui/gradient.tsx (LiveGradient, SessionGlow) and nowhere else                                                    no-restricted-syntax
+  ✖ 4 problems (4 errors, 0 warnings)

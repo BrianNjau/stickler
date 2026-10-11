@@ -123,6 +123,7 @@ export function CodeScreen({ email, mode }: CodeScreenProps) {
         )}
 
         <Button
+          hero
           label={busy ? authCopy.code.checking : authCopy.code.verify}
           loading={busy}
           disabled={code.length < CODE_LENGTH}

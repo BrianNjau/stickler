@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '@/ui';
+import { FocusIdle } from '@/features/session';
 
 export default function FocusRoute() {
-  return <PlaceholderScreen title="Focus" body="When a block starts, its timer and rounds run here." />;
+  return <FocusIdle />;
 }

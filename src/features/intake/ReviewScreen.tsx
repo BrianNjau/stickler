@@ -160,7 +160,7 @@ function ClarifyCard({ question, goalId }: { question: string; goalId: string })
 let newIds = 0;
 
 function ReviewBody({ draft, original, uid }: { draft: PlanDraft; original: PlanDraft; uid: string }) {
-  const { theme, tint } = useTheme();
+  const { theme, tint, hero } = useTheme();
   const insets = useSafeAreaInsets();
   const { setDraft, reset, notice } = useIntake();
   const [addTitle, setAddTitle] = useState('');
@@ -236,16 +236,16 @@ function ReviewBody({ draft, original, uid }: { draft: PlanDraft; original: Plan
         </View>
       )}
 
-      <Card tint="lilac">
-        <Text variant="h3" fg={tint('lilac').fg}>
+      <Card elevation="hero">
+        <Text variant="h3" fg={hero.fg}>
           {draft.northStar}
         </Text>
         {!!draft.summary && (
           <>
-            <Text variant="label" fg={tint('lilac').fg}>
+            <Text variant="label" fg={theme.amber}>
               {copy.why}
             </Text>
-            <Text variant="small" fg={tint('lilac').fg}>
+            <Text variant="small" fg={hero.fg2}>
               {draft.summary}
             </Text>
           </>

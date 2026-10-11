@@ -2,7 +2,9 @@
 
 **Direction: "soft paper, loud characters."** Warm near-white ground, flat pastel tinted cards,
 ink navy for every primary action, one hot amber accent reserved for live time, and two mascots
-carrying all the personality. Nothing is beige-and-grey, nothing is a gradient.
+carrying all the personality. Nothing is beige-and-grey. Since WP2.7 there is exactly one gradient,
+`liveGradient`, on exactly four things (see "WP2.7 — Polish pass" below); every other gradient is
+still forbidden.
 
 **The reference is the canvas** (Stickler Mobile UI Kit, 7 artboards: Sign in, Goal intake,
 Today, Focus session, Path, Rewards, and a tokens/components sheet). Build what is drawn there.
@@ -33,14 +35,15 @@ doesn't apply. Tab icons: `CalendarDays`, `Route`, `Timer`, `Gift`, `CircleUser`
   mono`), `color` prop keyed to the palette, `allowFontScaling` on.
 - `Button` — `primary | secondary | accent | destructive | quiet`, sizes `lg (52) | md (44)`,
   full-width by default on mobile, press state = scale 0.97 + opacity 0.9 over 180 ms, haptic on
-  press, `accessibilityRole="button"`, loading state with a spinner that keeps the width.
+  press, `accessibilityRole="button"`, loading state that keeps the width. (WP2.7: the spinner is
+  gone; loading is a shimmer across the button. Press is scale 0.97 over 120 ms, spring release.)
 - `Card` — `tint?: 'butter'|'mint'|'sky'|'lilac'|'blush'`, `radius.card`, no shadow, no border when
   tinted, `line` border when white.
 - `Pill` — priority pills (boss/main/side/rescue), meta pills, round pills. Priority pills follow
   the tokens sheet: name and reward, `BOSS · 30` on blush, `MAIN · 20` on butter, `SIDE · 10`
   neutral, `RESCUE · 1.5×` on mint. The numbers come from `XP` in `shared/types.ts`.
 - `TaskRow` — checkbox + title + optional minutes + priority pill + swipe actions.
-- `Sheet` — bottom sheet with a grab handle, `radius.sheet`, the one shadow, backdrop at 55%,
+- `Sheet` — bottom sheet with a grab handle, `radius.sheet`, `elevation.raised`, backdrop at 55%,
   always dismissible by swipe and by an explicit × (nothing traps the user).
 - `MascotBubble` — `persona: 'nimbus' | 'snitch'`; Nimbus is sentence case on a sky tint, the Snitch
   is mono uppercase on `snitchBg`. Tail on the bottom-left corner (4 px corner, 16 px elsewhere).
@@ -76,8 +79,9 @@ removes every animation. No hex literal outside `tokens.ts`.
    darkness means the clock is running. Never make Today dark except through the system theme.
 2. **Amber marks live time only**: the running ring, the pause button, the streak flame, the REC
    strip. It is never a decorative accent, never a heading colour.
-3. **One flat tint per card.** No gradients, no shadows on cards, no left-border accent stripes
-   (the single most over-used AI-app pattern — avoid it everywhere).
+3. **One flat tint per card.** No gradients on cards, no shadows on ordinary cards, no left-border
+   accent stripes (the single most over-used AI-app pattern — avoid it everywhere). Depth is earned
+   by one hero element per screen (the elevation ladder below).
 4. **One primary action per screen**, ink navy, full width, at the bottom of its card.
 5. **Characters earn their space.** A mascot bubble appears when it has something to say, and is
    absent otherwise. A screen with nothing to say shows no mascot rather than filler banter.
@@ -96,5 +100,44 @@ removes every animation. No hex literal outside `tokens.ts`.
 ## Deliberate departures from the inspiration you sent
 - **No hand-drawn marker illustrations** beyond the mascots. One illustration language, not two,
   and the mascots are the thing nobody else has.
-- **Tints are flat**, not gradient-washed: gradients date fast and go muddy in dark mode.
+- **Tints are flat**, not gradient-washed: gradients date fast and go muddy in dark mode. The one
+  exception, `liveGradient`, marks live time only and never washes a surface.
 - **Ink navy, not indigo**, for primary actions, so the brand's single hue stays amber.
+
+---
+
+## WP2.7 — Polish pass (docs/POLISH.md)
+
+Additive: palette, type scale, radii and spacing do not change. What changes is depth, one
+gradient, motion with a job, and the quality of every state. Reference artboards:
+`docs/design/Today · polished`, `Focus · polished`, `Polish kit · depth, motion, states`.
+
+### The one gradient (a deliberate reversal of "no gradients")
+- `liveGradient` (`#E0902A → #E2654A`, 135°) is allowed on exactly four things: a running progress
+  arc (`<Ring color="live">`), the primary action while a session is live (`<Button variant="live">`,
+  and Today's "Start the timer", as drawn), the FAB, and the streak pill.
+- `sessionGlow` (amber, radial, 20% → 32% when a round ends) sits behind a ring only.
+- **Every other gradient remains forbidden**: not on headings, card backgrounds or page washes, and
+  never rainbow or iridescent. Skeleton shimmer is a solid translucent band, not a gradient.
+- Enforced: lint forbids `LinearGradient`/`RadialGradient` outside `src/ui/gradient.tsx`.
+
+### Elevation ladder
+`elevation.flat` (border only) for everything; `raised` for sheets and the FAB; `hero` for exactly
+one element per screen, never two. The hero is an ink card in light mode and the lifted surface in
+dark mode (ink on ink would vanish). Heroes: Today's next block, the session ring, Path's current
+stage, Vault's crate, You's level card, Settings' plan card, the wizard's question card, the
+shape picker's draft card (or the suggested shape when drafting can't run), Review's north star.
+Where a screen's one obvious thing is an action (sign-in, the code, first-run, the intro, a
+screen-sized empty or error state) that action is the hero. Heroes carry `testID="hero"`.
+
+### Primitives (src/ui)
+`Ring`, `DayStrip`, `Segmented` (sliding white thumb), `Fab`, `Skeleton` (shimmer; every loading
+state, no spinners anywhere, enforced by lint), `EmptyState` and `ErrorState` (mascot or sentence,
+one line, one action), `StatNumber` (every changing number: XP, streak, tokens, percentages),
+`TaskCard` (tick: bounce, "+XP" float, boss burst), `LevelUp`, `Rise` (screen enter), `chime`.
+
+### Motion
+Everything animates through `useMotion()` (`src/ui/motion.ts`), which checks Reduce Motion first;
+lint forbids importing Reanimated's builders anywhere else, so Reduce Motion removes every
+animation by construction. Springs: `{ damping: 14, stiffness: 180, mass: 0.9 }` by default,
+`{ damping: 9, stiffness: 220, mass: 0.7 }` for overshoot.

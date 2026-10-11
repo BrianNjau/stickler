@@ -54,10 +54,11 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: 'Today', tabBarIcon: icon(CalendarDays), tabBarLabel: label('Today') }} />
       <Tabs.Screen name="path" options={{ title: 'Path', tabBarIcon: icon(Route), tabBarLabel: label('Path') }} />
       <Tabs.Screen name="focus" options={{ title: 'Focus', tabBarIcon: icon(Timer), tabBarLabel: label('Focus') }} />
-      <Tabs.Screen name="rewards" options={{ title: 'Rewards', tabBarIcon: icon(Gift), tabBarLabel: label('Rewards') }} />
+      <Tabs.Screen name="rewards" options={{ title: 'Vault', tabBarIcon: icon(Gift), tabBarLabel: label('Vault') }} />
       <Tabs.Screen name="character" options={{ title: 'You', tabBarIcon: icon(CircleUser), tabBarLabel: label('You') }} />
       <Tabs.Screen name="settings" options={{ href: null, title: 'Settings' }} />
       <Tabs.Screen name="intake" options={{ href: null, title: 'New goal' }} />
+      <Tabs.Screen name="kit" options={{ href: null, title: 'Kit' }} />
       <Tabs.Screen name="add-email" options={{ href: null, title: 'Add an email' }} />
       <Tabs.Screen name="confirm-email" options={{ href: null, title: 'Confirm your email' }} />
     </Tabs>

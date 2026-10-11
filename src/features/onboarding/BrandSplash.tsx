@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { brand } from '@/lib/brand';
-import { motion, palette, radius, Text, useReducedMotion } from '@/ui';
+import { motion, palette, radius, Text, useMotion } from '@/ui';
 
 // The same image the native splash shows (app.json: expo-splash-screen, imageWidth 200), so the
 // hand-off from native to JS is invisible. This layer adds what a static splash cannot: the bar.
@@ -18,32 +18,38 @@ const IMAGE_SIZE = 200;
  * wrong screen. The bar runs to 80% while waiting and completes once ready.
  */
 export function BrandSplash({ ready, onDone }: { ready: boolean; onDone: () => void }) {
-  const reduced = useReducedMotion();
+  const m = useMotion();
   const insets = useSafeAreaInsets();
   const progress = useSharedValue(0);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (!reduced) progress.set(withTiming(0.8, { duration: motion.reward }));
-  }, [reduced, progress]);
+    progress.set(m.timing(0.8, motion.reward));
+  }, [m, progress]);
 
   useEffect(() => {
     if (!ready) return;
     // Reduce Motion: no bar, no fade — straight into the app.
-    if (reduced) {
+    if (m.reduced) {
       onDone();
       return;
     }
-    progress.set(withSequence(withTiming(0.8, { duration: motion.reward }), withTiming(1, { duration: motion.state })));
-    opacity.set(
-      withSequence(
-        withTiming(1, { duration: motion.reward + motion.state }),
-        withTiming(0, { duration: motion.enter }, (finished) => {
-          if (finished) scheduleOnRN(onDone);
-        }),
+    progress.set(
+      m.animate(1, ({ withSequence, withTiming }) =>
+        withSequence(withTiming(0.8, { duration: motion.reward }), withTiming(1, { duration: motion.state })),
       ),
     );
-  }, [ready, reduced, onDone, progress, opacity]);
+    opacity.set(
+      m.animate(0, ({ withSequence, withTiming }) =>
+        withSequence(
+          withTiming(1, { duration: motion.reward + motion.state }),
+          withTiming(0, { duration: motion.enter }, (finished) => {
+            if (finished) scheduleOnRN(onDone);
+          }),
+        ),
+      ),
+    );
+  }, [ready, m, onDone, progress, opacity]);
 
   const fade = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   const fill = useAnimatedStyle(() => ({ width: `${progress.get() * 100}%` }));

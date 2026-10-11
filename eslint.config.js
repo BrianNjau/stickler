@@ -57,6 +57,55 @@ module.exports = defineConfig([
           selector: 'Literal[value=/^\\s*(rgb|hsl)a?\\(/]',
           message: 'Colour function outside src/ui/tokens.ts. Use a palette token.',
         },
+        // docs/POLISH.md: one gradient (liveGradient) on four things, plus the session glow. Both
+        // are drawn by src/ui/gradient.tsx; no other file may build a gradient.
+        {
+          selector: "ImportDeclaration[source.value='react-native-svg'] ImportSpecifier[imported.name=/^(LinearGradient|RadialGradient)$/]",
+          message: 'Gradients live in src/ui/gradient.tsx (LiveGradient, SessionGlow) and nowhere else.',
+        },
+        // No spinners anywhere: loading is a Skeleton in the real layout.
+        {
+          selector: "ImportDeclaration[source.value='react-native'] ImportSpecifier[imported.name=/^(ActivityIndicator|RefreshControl)$/]",
+          message: 'No spinners. Use <Skeleton> in the real layout shape.',
+        },
+      ],
+    },
+  },
+  {
+    // The gradient module itself: allowed to build the gradient, still no hex literals.
+    files: ['src/ui/gradient.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Literal[value=/#[0-9a-fA-F]{3,8}\\b/]',
+          message: 'Hex colour outside src/ui/tokens.ts. Use a palette token.',
+        },
+      ],
+    },
+  },
+  {
+    // Every animation goes through useMotion() (src/ui/motion.ts), which checks Reduce Motion first.
+    // The Reanimated builders and React Native's own Animated API are reachable nowhere else.
+    files: ['app/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
+    ignores: ['src/ui/motion.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'react-native-reanimated',
+              importNames: ['withSpring', 'withTiming', 'withRepeat', 'withDelay', 'withSequence', 'withDecay', 'withClamp', 'Easing'],
+              message: 'Animate through useMotion() from @/ui so Reduce Motion is honoured.',
+            },
+            {
+              name: 'react-native',
+              importNames: ['Animated', 'Easing', 'LayoutAnimation'],
+              message: 'Use Reanimated through useMotion() from @/ui.',
+            },
+          ],
+        },
       ],
     },
   },

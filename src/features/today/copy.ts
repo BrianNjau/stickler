@@ -1,0 +1,30 @@
+// Today's words. Data, never literals in components (mascot lines move to character_lines in WP7).
+import type { DayPart } from './days';
+
+export const todayCopy = {
+  greeting: { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening' } satisfies Record<DayPart, string>,
+  greetingNamed: (part: string, name: string | null) => (name ? `${part}, ${name}` : part),
+  levelLabel: (level: number) => `Level ${level}`,
+  streak: (days: number) => `${days} day streak`,
+  upNext: 'Up next',
+  ofToday: 'of today',
+  rounds: (rounds: number, minutes: number) => `${rounds} rounds × ${minutes} min`,
+  tasksDone: (done: number, total: number) => `${done} of ${total} tasks done`,
+  start: 'Start the timer',
+  dayDone: { title: 'That’s the day', body: 'Every block is behind you. The rest of the evening is yours.' },
+  tasks: 'Tasks',
+  left: 'Left',
+  done: 'Done',
+  allLeftDone: 'Nothing left. That’s the whole list.',
+  noneDone: 'Nothing ticked yet. The first one is the hardest; it’s also the shortest.',
+  fab: 'Add a quest to today',
+  addTitle: 'Add a quest',
+  addLabel: 'What is it?',
+  addPlaceholder: 'e.g. Reply to the landlord',
+  addCta: 'Add to today',
+  noPlan: { line: 'No plan yet. Say what you want in your own words and Stickler builds the days.', action: 'Set your first goal' },
+  future: (weekday: string) => ({ line: `${weekday} isn’t planned yet. Each day is planned the evening before.`, action: 'Back to today' }),
+  past: (weekday: string) => ({ line: `${weekday} is done and filed. Today is the one you can still change.`, action: 'Back to today' }),
+  loadFailed: { message: 'Today didn’t load. Your connection dropped on the way.', action: 'Try again' },
+  levelUp: 'Level up',
+} as const;

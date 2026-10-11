@@ -127,21 +127,60 @@ export const size = {
   tabBar: 56,
 } as const;
 
-/** Elevation is borders and tints. Exactly one shadow exists, for sheets and modals. */
-export const shadow = {
-  sheet: {
-    shadowColor: '#16202A', shadowOpacity: 0.22, shadowRadius: 30,
-    shadowOffset: { width: 0, height: 12 }, elevation: 12,
+// ── Depth (WP2.7, docs/POLISH.md) ─────────────────────────────────────────────────────────────
+// One `hero` per screen, never two: Today's next-block card, the session ring, Vault's crate, Path's
+// current stage. `raised` is for sheets and the FAB. Everything else is `flat` (border only).
+export const elevation = {
+  flat: {},
+  raised: {
+    shadowColor: '#16202A', shadowOpacity: 0.28, shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 }, elevation: 6,
+  },
+  hero: {
+    shadowColor: '#16202A', shadowOpacity: 0.55, shadowRadius: 34,
+    shadowOffset: { width: 0, height: 18 }, elevation: 14,
   },
 } as const;
+export type Elevation = keyof typeof elevation;
+
+/** The FAB's amber-tinted shadow (it rests on `raised`, coloured by the gradient it carries). */
+export const fabShadow = {
+  shadowColor: '#E0902A', shadowOpacity: 0.45, shadowRadius: 18,
+  shadowOffset: { width: 0, height: 8 }, elevation: 8,
+} as const;
+
+/** @deprecated Sheets use `elevation.raised`. Kept so older imports keep compiling. */
+export const shadow = { sheet: elevation.raised } as const;
+
+// ── The one gradient ──────────────────────────────────────────────────────────────────────────
+// Allowed on exactly four things: a running progress arc, the primary action while a session is
+// live, the FAB, and the streak pill. Nowhere else: not headings, cards or page washes. Every other
+// gradient is forbidden, rainbow and iridescent ones especially.
+export const liveGradient = ['#E0902A', '#E2654A'] as const; // 135°
+/** Radial, behind the session ring only (and the ring in Today's hero). */
+export const sessionGlow = 'rgba(224,144,42,0.20)';
+/** The glow as an animatable pair: amber at 20% at rest, 32% when a round ends. */
+export const glow = { color: '#E0902A', rest: 0.2, peak: 0.32 } as const;
+
+/** Burst particles (boss ticked, level up): the amber pair and the skill solids. Never a rainbow wash. */
+export const burstColors = ['#E0902A', '#E2654A', '#2F6FB0', '#1C8A6C', '#7A4E9C', '#C27C16'] as const;
 
 export const motion = {
   state: 180,          // pressed, toggled, colour change
+  press: 120,          // card press down to 0.97
   enter: 280,          // screens, sheets
+  stagger: 40,         // screen enter: per-card delay
+  rise: 12,            // screen enter: how far cards rise, px
   reward: 450,         // XP pop, badge, combo bump — with overshoot
+  number: 600,         // StatNumber, old value to new
+  ring: 700,           // ring fill (spring, settles in about this long)
+  float: 44,           // "+20 XP" floats up this far, px
+  typeMs: 14,          // mascot text types at this many ms a character
   crate: 900,          // the crate sequence
   spring: { damping: 14, stiffness: 180, mass: 0.9 },  // reanimated withSpring
   overshoot: { damping: 9, stiffness: 220, mass: 0.7 },
+  /** Day strip: a stiff spring that settles in about 200 ms. */
+  snap: { damping: 20, stiffness: 420, mass: 0.6 },
 } as const;
 
 /** Haptics (expo-haptics) — the app's whole vibration vocabulary. */

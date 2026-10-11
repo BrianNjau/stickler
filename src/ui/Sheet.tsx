@@ -2,14 +2,14 @@ import { X } from './icons';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { useReducedMotion } from './motion';
+import { useMotion } from './motion';
 import { Text } from './Text';
 import { useTheme } from './theme';
-import { motion, radius, shadow, size, space } from './tokens';
+import { elevation, motion, radius, size, space } from './tokens';
 
 export interface SheetProps {
   visible: boolean;
@@ -28,30 +28,39 @@ const DISMISS_VELOCITY = 900;
 export function Sheet({ visible, title, onClose, children }: SheetProps) {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const reduced = useReducedMotion();
+  const m = useMotion();
   const { height } = useWindowDimensions();
   // Stays mounted after `visible` turns false until the exit animation has finished.
   const [mounted, setMounted] = useState(visible);
   if (visible && !mounted) setMounted(true);
+  // Reduce Motion: no exit animation to wait for.
+  if (!visible && mounted && m.reduced) setMounted(false);
 
   const y = useSharedValue(height);
   const dim = useSharedValue(0);
-  const duration = reduced ? 0 : motion.enter;
 
   useEffect(() => {
     if (visible) {
-      y.set(withTiming(0, { duration }));
-      dim.set(withTiming(1, { duration }));
+      y.set(m.timing(0, motion.enter));
+      dim.set(m.timing(1, motion.enter));
     } else {
-      dim.set(withTiming(0, { duration }));
+      dim.set(m.timing(0, motion.enter));
+      if (m.reduced) {
+        y.set(height);
+        return;
+      }
       y.set(
-        withTiming(height, { duration }, (finished) => {
-          if (finished) scheduleOnRN(setMounted, false);
-        }),
+        m.animate(height, ({ withTiming }) =>
+          withTiming(height, { duration: motion.enter }, (finished) => {
+            if (finished) scheduleOnRN(setMounted, false);
+          }),
+        ),
       );
     }
-  }, [visible, duration, height, y, dim]);
+  }, [visible, m, height, y, dim]);
 
+  // Animation builders live behind the motion gate on the JS side, so the snap-back hops there.
+  const snapBack = () => y.set(m.timing(0, motion.state));
   const pan = Gesture.Pan()
     .activeOffsetY(8)
     .onUpdate((e) => {
@@ -61,7 +70,7 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
       if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
         scheduleOnRN(onClose);
       } else {
-        y.set(withTiming(0, { duration: motion.state }));
+        scheduleOnRN(snapBack);
       }
     });
 
@@ -88,7 +97,7 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
               accessibilityViewIsModal
               style={[
                 styles.sheet,
-                shadow.sheet,
+                elevation.raised,
                 { backgroundColor: theme.surface, paddingBottom: space.xl + insets.bottom },
                 sheetStyle,
               ]}

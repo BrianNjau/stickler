@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '@/ui';
+import { PathScreen } from '@/features/path';
 
 export default function PathRoute() {
-  return <PlaceholderScreen title="Path" body="Your tracks, stages and milestones will live here." />;
+  return <PathScreen />;
 }

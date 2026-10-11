@@ -117,11 +117,12 @@ export function GeneratingStep() {
         <MascotBubble persona="nimbus" mood="focus">
           {generatingCopy.banter[line] ?? generatingCopy.banter[0]}
         </MascotBubble>
-        <Card accessible accessibilityLabel="Drafting your plan" accessibilityState={{ busy: true }}>
-          <Skeleton width="50%" height={14} />
-          <Skeleton height={18} />
-          <Skeleton width="80%" height={18} />
-          <Skeleton width="65%" height={18} rounded={radius.pill} />
+        {/* The hero: the plan taking shape, in the shape it will have. */}
+        <Card elevation="hero" accessible accessibilityLabel="Drafting your plan" accessibilityState={{ busy: true }}>
+          <Skeleton onHero width="50%" height={14} />
+          <Skeleton onHero height={18} />
+          <Skeleton onHero width="80%" height={18} />
+          <Skeleton onHero width="65%" height={18} rounded={radius.pill} />
         </Card>
         <Button label={generatingCopy.cancel} variant="quiet" size="md" onPress={cancel} />
       </View>

@@ -1,5 +1,7 @@
-// Stand-in data for the populated Today state until WP3 wires fn_generate_day.
-// The Nimbus line lives here as data, as character_lines will in WP7 — never inline in a component.
+// Fixture data for the Today previews (?state=populated | loading | empty) until WP3 wires ticking.
+// Matches docs/design/Today · polished. Lines live here as data, as character_lines will in WP7.
+import { XP } from '@shared/types';
+
 import type { Priority } from '@/ui';
 
 export type TodayState = 'empty' | 'loading' | 'populated';
@@ -13,56 +15,48 @@ export interface PreviewTask {
   minutes: number;
   priority: Priority;
   done: boolean;
-}
-
-export interface PreviewBlock {
-  title: string;
-  start: string;
-  end: string;
-  minutes: number;
-  rounds: number;
-  skill: string;
-  kind: string;
-  note: string;
-  tasks: PreviewTask[];
+  /** Index into the skill colours. */
+  skill: number;
 }
 
 export interface TodayPreview {
+  name: string;
+  /** The character title earned so far (WP8). */
+  title: string;
+  /** 940 XP is level 4 (600–999): ticking the boss, a main and a side crosses into level 5. */
+  xp: number;
   streak: number;
-  nimbusLine: string;
-  now: PreviewBlock;
-  next: PreviewBlock;
-  pace: { done: number; total: number; expected: number };
+  restDays: number[];
+  next: { start: string; title: string; rounds: number; roundMinutes: number };
+  tasks: PreviewTask[];
+  /** Said only when there is something to say: keyed by how many are done. */
+  lines: Record<number, string>;
+  levelUpLine: string;
 }
 
+export const xpFor = (p: Priority) => (p === 'rescue' ? Math.round(XP.task.side * XP.rescueMultiplier) : XP.task[p]);
+
 export const todayPreview: TodayPreview = {
-  streak: 4,
-  nimbusLine: 'Forecast for 12:30: scattered focus, clearing to brilliant.',
-  now: {
-    title: 'Resilient architectures',
-    start: '12:30',
-    end: '13:45',
-    minutes: 75,
-    rounds: 3,
-    skill: 'AWS',
-    kind: 'Study',
-    note: 'The biggest exam domain, while your brain still has battery.',
-    tasks: [
-      { id: 't1', title: 'Decoupling: SQS vs SNS vs EventBridge', minutes: 25, priority: 'boss', done: false },
-      { id: 't2', title: 'Cost optimisation: Savings Plans and Spot', minutes: 20, priority: 'main', done: true },
-      { id: 't3', title: 'Caching tiers: CloudFront, ElastiCache, DAX', minutes: 20, priority: 'side', done: false },
-    ],
+  name: 'Brian',
+  title: 'YAML Whisperer',
+  xp: 940,
+  streak: 6,
+  restDays: [0, 6],
+  next: { start: '09:30', title: 'Resilient architectures', rounds: 3, roundMinutes: 23 },
+  tasks: [
+    { id: 't1', title: 'VPC design: subnets, routing, NAT', minutes: 25, priority: 'boss', done: false, skill: 0 },
+    { id: 't2', title: 'Multi-AZ failover patterns', minutes: 20, priority: 'main', done: true, skill: 0 },
+    { id: 't3', title: 'SQS vs SNS vs EventBridge: decoupling drill', minutes: 20, priority: 'main', done: false, skill: 1 },
+    { id: 't4', title: 'Read the Well-Architected reliability pillar', minutes: 15, priority: 'side', done: true, skill: 2 },
+    { id: 't5', title: 'Route 53 failover routing: build it', minutes: 25, priority: 'main', done: false, skill: 1 },
+    { id: 't6', title: 'Re-answer last week’s wrong questions', minutes: 15, priority: 'rescue', done: false, skill: 3 },
+    { id: 't7', title: 'Flashcards: storage classes', minutes: 10, priority: 'side', done: false, skill: 2 },
+  ],
+  lines: {
+    2: 'Two down before 10am. Showing off, I see.',
+    3: 'Three. The cloud is impressed, and the cloud is hard to impress.',
+    5: 'Five done. At this rate the YAML will start indenting itself.',
+    7: 'All seven. I’ve run out of weather puns. Almost.',
   },
-  next: {
-    title: 'Step away from the screen',
-    start: '13:45',
-    end: '14:00',
-    minutes: 15,
-    rounds: 0,
-    skill: 'Rest',
-    kind: 'Break',
-    note: 'Walk, water, zero scrolling. Yes, this counts as part of the plan.',
-    tasks: [{ id: 't4', title: 'Actually left the desk', minutes: 15, priority: 'side', done: false }],
-  },
-  pace: { done: 3, total: 11, expected: 3 },
+  levelUpLine: 'Cloud Wrangler. The YAML fears you now.',
 };

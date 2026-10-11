@@ -1,0 +1,26 @@
+screen | 390 light | 390 dark | 1280 light | 1280 dark
+--- | --- | --- | --- | ---
+01-intro | 1 hero | 1 hero | 1 hero | 1 hero
+02-sign-in | 1 hero | 1 hero | 1 hero | 1 hero
+03-verify | 1 hero | 1 hero | 1 hero | 1 hero
+04-today-no-plan | 1 hero | 1 hero | 1 hero | 1 hero
+05-focus-idle | 1 hero | 1 hero | 1 hero | 1 hero
+06-path-live-empty | 1 hero | 1 hero | 1 hero | 1 hero
+07-vault-live-empty | 1 hero | 1 hero | 1 hero | 1 hero
+08-wizard-goal | 1 hero | 1 hero | 1 hero | 1 hero
+09-wizard-why | 1 hero | 1 hero | 1 hero | 1 hero
+10-wizard-horizon | 1 hero | 1 hero | 1 hero | 1 hero
+11-wizard-hours | 1 hero | 1 hero | 1 hero | 1 hero
+12-shape-picker-ai-first | 1 hero | 1 hero | 1 hero | 1 hero
+13-generating | 1 hero | 1 hero | 1 hero | 1 hero
+14-review | 1 hero | 1 hero | 1 hero | 1 hero
+15-today-live | 1 hero | 1 hero | 1 hero | 1 hero
+16-today-live-tomorrow | 1 hero | 1 hero | 1 hero | 1 hero
+17-you | 1 hero | 1 hero | 1 hero | 1 hero
+18-settings | 1 hero | 1 hero | 1 hero | 1 hero
+19-add-email | 1 hero | 1 hero | 1 hero | 1 hero
+20-today-preview | 1 hero | 1 hero | 1 hero | 1 hero
+21-today-loading | 1 hero | 1 hero | 1 hero | 1 hero
+22-session | 1 hero | 1 hero | 1 hero | 1 hero
+23-path-preview | 1 hero | 1 hero | 1 hero | 1 hero
+24-vault-preview | 1 hero | 1 hero | 1 hero | 1 hero

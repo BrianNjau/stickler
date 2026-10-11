@@ -23,3 +23,12 @@ export { default as Settings } from 'lucide-react-native/icons/settings';
 export { default as Timer } from 'lucide-react-native/icons/timer';
 export { default as Trash } from 'lucide-react-native/icons/trash';
 export { default as X } from 'lucide-react-native/icons/x';
+// WP2.7: session controls, Path and Vault.
+export { default as BookOpen } from 'lucide-react-native/icons/book-open';
+export { default as CircleCheck } from 'lucide-react-native/icons/circle-check';
+export { default as CircleParking } from 'lucide-react-native/icons/circle-parking';
+export { default as Flag } from 'lucide-react-native/icons/flag';
+export { default as Lock } from 'lucide-react-native/icons/lock';
+export { default as Package } from 'lucide-react-native/icons/package';
+export { default as PackageOpen } from 'lucide-react-native/icons/package-open';
+export { default as Pause } from 'lucide-react-native/icons/pause';

@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '@/ui';
+import { VaultScreen } from '@/features/rewards';
 
-export default function RewardsRoute() {
-  return <PlaceholderScreen title="Rewards" body="Tokens, crates and your reward list will live here." />;
+export default function VaultRoute() {
+  return <VaultScreen />;
 }

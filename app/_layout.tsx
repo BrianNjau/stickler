@@ -109,6 +109,8 @@ export default function RootLayout() {
                 </Stack.Protected>
                 <Stack.Protected guard={status === 'ready'}>
                   <Stack.Screen name="(tabs)" />
+                  {/* The session is full-screen and always dark: no tab bar, no FAB. */}
+                  <Stack.Screen name="session" options={{ presentation: 'fullScreenModal', animation: reduced ? 'none' : 'fade' }} />
                 </Stack.Protected>
                 <Stack.Screen name="auth/callback" />
               </Stack>
